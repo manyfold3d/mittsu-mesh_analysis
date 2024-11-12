@@ -8,11 +8,11 @@ Adds three methods:
 * `Mittsu::Object3D#solid?`: Detects if the faces of a manifold mesh are correctly oriented, giving the mesh a sensible inside and outside.
 * `Mittsu::Face3#flip!`: Flips the vertex order, and thus orientation of a particular face.
 
-# Requirements
+## Requirements
 
 Ruby 3.1 or above, otherwise the same as for [Mittsu](https://github.com/danini-the-panini/mittsu) itself.
 
-# Usage
+## Usage
 
 Just install:
 
@@ -24,6 +24,6 @@ Then require in your code:
 
 The methods above should then be available for use.
 
-# About
+## About
 
 This code was originally written for [Manyfold](https://manyfold.app), supported by funding from [NLNet](https://nlnet.nl) and [NGI Zero](https://ngi.eu/ngi-projects/ngi-zero/).
