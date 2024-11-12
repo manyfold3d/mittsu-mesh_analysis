@@ -19,3 +19,7 @@ Then require in your code:
 `require 'mittsu/mesh_analysis'`
 
 The methods above should then be available for use.
+
+# About
+
+This code was originally written for [Manyfold](https://manyfold.app), supported by funding from [NLNet](https://nlnet.nl) and [NGI Zero](https://ngi.eu/ngi-projects/ngi-zero/).
