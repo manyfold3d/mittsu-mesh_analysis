@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
     ", "Rakefile", "README.md"]
   end
 
-  spec.required_ruby_version = '~> 3.1'
+  spec.required_ruby_version = "~> 3.1"
 
   spec.add_dependency "mittsu", "~> 0.4"
 
