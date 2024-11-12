@@ -1,6 +1,6 @@
 # Mittsu: Mesh Analysis
 
-Mesh analysis methods for Mittsu.
+Mesh analysis methods for [Mittsu](https://github.com/danini-the-panini/mittsu).
 
 Adds three methods:
 
