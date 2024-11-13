@@ -1,4 +1,4 @@
-$glfwversion="3.3.1"
+$glfwversion="3.4"
 
 Invoke-WebRequest "https://github.com/glfw/glfw/releases/download/$glfwversion/glfw-$glfwversion.bin.WIN32.zip" -OutFile "$pwd\glfw-$glfwversion.bin.WIN32.zip"
 
