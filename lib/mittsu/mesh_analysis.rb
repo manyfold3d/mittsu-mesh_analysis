@@ -1,17 +1,14 @@
 require "mittsu"
 require "mittsu/mesh_analysis/version"
+require "mittsu/mesh_analysis/face3"
 require "mittsu/mesh_analysis/analysis"
 
 module Mittsu
   class Object3D
-    include Mittsu::MeshAnalysis::Analysis
+    include MeshAnalysis::Analysis
   end
 
   class Face3
-    def flip!
-      tmp = @a
-      @a = @c
-      @c = tmp
-    end
+    include MeshAnalysis::Face3
   end
 end
