@@ -21,16 +21,34 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       expect(subject.edges.count).to eq 5
     end
 
-    context "when inspecting shared edge" do
-      let(:edge) { subject.between(1, 2) } # These are the joined opposite corner vertices in the PlaneGeometry
+    context "when inspecting diagonal edge" do
+      # These are the joined opposite corner vertices in the PlaneGeometry
+      let(:edge) { subject.between(1, 2) }
 
-      it "references left edge" do
+      it "references left face" do
         expect(edge.left).to eq 0
       end
 
-      it "references right edge" do
+      it "references right face" do
         expect(edge.right).to eq 1
       end
+
+      it "references clockwise edge on left side" do
+        expect(edge.cw_left).to eq 0
+      end
+
+      it "references counter-clockwise edge on left side" do
+        expect(edge.ccw_left).to eq 2
+      end
+
+      it "references clockwise edge on right side" do
+        expect(edge.cw_right).to eq 4
+      end
+
+      it "references counter-clockwise edge on right side" do
+        expect(edge.ccw_right).to eq 3
+      end
+
     end
   end
 end
