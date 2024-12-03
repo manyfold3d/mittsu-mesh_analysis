@@ -14,9 +14,8 @@ module Mittsu::MeshAnalysis
     def from_geometry(geometry)
       # Vertices are the same
       @vertices = geometry.vertices.clone
-      @faces = geometry.faces.clone
       # Faces get converted to an edge reference
-      @faces.each_with_index do |face, index|
+      geometry.faces.each_with_index do |face, index|
         # Add the three edges
         e1_new, e1 = add_edge(v1: face.a, v2: face.b, face: index)
         e2_new, e2 = add_edge(v1: face.b, v2: face.c, face: index)
@@ -43,6 +42,8 @@ module Mittsu::MeshAnalysis
           @edges[e3].cw_right = e2
           @edges[e3].ccw_right = e1
         end
+        # Store face->edge reference
+        @faces[index] = e1
       end
     end
 
