@@ -3,11 +3,11 @@ require "mittsu/mesh_analysis/winged_edge"
 module Mittsu::MeshAnalysis
   class WingedEdgeGeometry < Mittsu::Geometry
 
-    attr_reader :vertices, :faces, :edges
+    attr_reader :vertices, :edges
 
     def initialize
-      @vertices = []
-      @faces = []
+      super
+      @face_indices = []
       @edges = []
     end
 
@@ -43,8 +43,22 @@ module Mittsu::MeshAnalysis
           @edges[e3].ccw_right = e1
         end
         # Store face->edge reference
-        @faces[index] = e1
+        @face_indices[index] = {face: index, edge: e1}
       end
+      # Calculate renderable mesh after import
+      flatten!
+    end
+
+    def flatten!
+      @faces = @face_indices.map do |face|
+        e0 = edge(face[:edge])
+        if e0.left == face[:face]
+          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left).finish)
+        elsif e0.right == face[:face]
+          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right).finish)
+        end
+      end
+      compute_face_normals
     end
 
     def between(v1, v2)

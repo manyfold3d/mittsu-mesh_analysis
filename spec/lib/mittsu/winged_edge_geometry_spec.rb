@@ -10,6 +10,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     end
 
     it "preserves number of faces from original geometry" do
+      subject.flatten!
       expect(subject.faces.count).to eq 2
     end
 
@@ -95,6 +96,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     end
 
     it "preserves number of faces from original geometry" do
+      subject.flatten!
       expect(subject.faces.count).to eq(
         (14*32*2) + # quads around the sphere
         (2*32) # triangles at the poles
