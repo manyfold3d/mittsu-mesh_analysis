@@ -1,5 +1,9 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
-  let(:edge) { described_class.new start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8}
+  let(:edge) { described_class.new index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8}
+
+  it "has an index" do
+    expect(edge.index).to eq 0
+  end
 
   it "has a start vertex" do
     expect(edge.start).to eq 1

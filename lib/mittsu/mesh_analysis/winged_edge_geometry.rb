@@ -72,7 +72,7 @@ module Mittsu::MeshAnalysis
         return false, index
       else
         index = @edges.count
-        @edges << WingedEdge.new(start: v1, finish: v2, left: face)
+        @edges << WingedEdge.new(index: index, start: v1, finish: v2, left: face)
         return true, index
       end
     end
