@@ -25,22 +25,23 @@ module Mittsu::MeshAnalysis
     end
 
     def between(v1, v2)
-      index = index_between(v1, v2)
+      index = find_edge(from: v1, to: v2) || find_edge(from: v2, to: v1)
       index ? @edges[index] : nil
     end
 
     private
 
-    def index_between(v1, v2)
-      @edges.find_index { |e| (e.start == v1 && e.finish == v2) || (e.start == v2 && e.finish == v1) }
+    def find_edge(from:, to:)
+      @edges.find_index { |e| (e.start == from && e.finish == to) }
     end
 
     def add_edge(v1:, v2:, face:)
-      # Is there already an edge?
-      index = index_between(v1, v2)
+      # Is there already an edge going the other way?
+      index = find_edge(from: v2, to: v1)
       if index
         edge = @edges[index]
-        edge.right = face if edge.right.nil?
+        raise "Mesh conflict" unless edge.right.nil?
+        edge.right = face
       else
         index = @edges.count
         @edges << WingedEdge.new(start: v1, finish: v2, left: face)
