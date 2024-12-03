@@ -49,7 +49,11 @@ module Mittsu::MeshAnalysis
 
     def between(v1, v2)
       index = find_edge(from: v1, to: v2) || find_edge(from: v2, to: v1)
-      index ? @edges[index] : nil
+      edge(index)
+    end
+
+    def edge(index)
+      @edges[index] if index
     end
 
     private
@@ -62,7 +66,7 @@ module Mittsu::MeshAnalysis
       # Is there already an edge going the other way?
       index = find_edge(from: v2, to: v1)
       if index
-        edge = @edges[index]
+        edge = edge(index)
         raise "Mesh conflict" unless edge.right.nil?
         edge.right = face
         return false, index
