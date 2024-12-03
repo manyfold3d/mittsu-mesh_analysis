@@ -1,5 +1,5 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
-  let(:edge) { described_class.new start: 1, finish: 2, left: 1, right: 2, prevLeft: 2, nextLeft: 3, prevRight: 4, nextRight: 5}
+  let(:edge) { described_class.new start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8}
 
   it "has a start vertex" do
     expect(edge.start).to eq 1
@@ -10,26 +10,26 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   it "has a left face" do
-    expect(edge.left).to eq 1
+    expect(edge.left).to eq 3
   end
 
   it "has a right face" do
-    expect(edge.right).to eq 2
+    expect(edge.right).to eq 4
   end
 
-  it "has a prevLeft edge" do
-    expect(edge.prevLeft).to eq 2
+  it "has a cw_left edge" do
+    expect(edge.cw_left).to eq 5
   end
 
-  it "has a nextLeft edge" do
-    expect(edge.nextLeft).to eq 3
+  it "has a ccw_left edge" do
+    expect(edge.ccw_left).to eq 6
   end
 
-  it "has a prevRight edge" do
-    expect(edge.prevRight).to eq 4
+  it "has a cw_right edge" do
+    expect(edge.cw_right).to eq 7
   end
 
-  it "has a nextRight edge" do
-    expect(edge.nextRight).to eq 5
+  it "has a ccw_right edge" do
+    expect(edge.ccw_right).to eq 8
   end
 end
