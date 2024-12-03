@@ -19,5 +19,9 @@ module Mittsu::MeshAnalysis
       @ccw_right = ccw_right
     end
 
+    def complete?
+      index && start && finish && left && right && cw_left && ccw_left && cw_right && ccw_right
+    end
+
   end
 end

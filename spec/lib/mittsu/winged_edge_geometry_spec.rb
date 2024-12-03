@@ -82,4 +82,39 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
     end
   end
+
+  context "with a larger geometry loaded in" do
+    let(:sphere) {
+      s = Mittsu::SphereGeometry.new(2.0, 32, 16)
+      s.merge_vertices
+      s
+    }
+
+    before do
+      subject.from_geometry(sphere)
+    end
+
+    it "preserves number of faces from original geometry" do
+      expect(subject.faces.count).to eq(
+        (14*32*2) + # quads around the sphere
+        (2*32) # triangles at the poles
+      )
+    end
+
+    it "preserves number of vertices from original geometry" do
+      expect(subject.vertices.count).to eq((30*16) + 2)
+    end
+
+    it "creates the right number of edge records" do
+      expect(subject.edges.count).to eq(
+        ((14*32*2) + (2*32)) + # faces
+        ((30*16) + 2) + # vertices
+        -2 # From the Euler characteristic: F + V − E = 2
+      )
+    end
+
+    it "checks mesh integrity" do
+      expect(subject).to be_manifold
+    end
+  end
 end

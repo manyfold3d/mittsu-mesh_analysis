@@ -56,6 +56,10 @@ module Mittsu::MeshAnalysis
       @edges[index] if index
     end
 
+    def manifold?
+      @edges.all? { |e| e.complete? }
+    end
+
     private
 
     def find_edge_index(from:, to:)
