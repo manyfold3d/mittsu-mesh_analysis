@@ -2,6 +2,7 @@ require "mittsu"
 require "mittsu/mesh_analysis/version"
 require "mittsu/mesh_analysis/face3"
 require "mittsu/mesh_analysis/analysis"
+require "mittsu/mesh_analysis/winged_edge"
 require "mittsu/mesh_analysis/modifiers/decimator"
 
 module Mittsu
