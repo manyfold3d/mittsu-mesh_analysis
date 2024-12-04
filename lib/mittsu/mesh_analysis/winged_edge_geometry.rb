@@ -78,6 +78,17 @@ module Mittsu::MeshAnalysis
       @edges.all? { |e| e.complete? }
     end
 
+    def split(vertex:, left:, right:, displacement:, position: :midpoint, flatten: true)
+      # Find the vertex and edges that will be split
+      # Create new vertex
+      # Move existing vertex
+      # Create new edge
+      # Split left edge
+      # Split right edge
+      # Prepare for rendering
+      flatten! if flatten
+    end
+
     def collapse(index, position: :midpoint, flatten: true)
       # find the edge
       e0 = edge(index)
@@ -99,11 +110,17 @@ module Mittsu::MeshAnalysis
       else
         raise ArgumentError.new("position must be :midpoint, :start or :finish")
       end
+      # TODO: Calculate displacement vector
+      # displacement =
       @vertices[e0.start] = @vertices[e0.finish] = new_position
-      # TODO Recalculate all the wings
+      # TODO: Merge edges
+      # TODO: Remove one vertex
+      # TODO: Recalculate all the wings
       # ...
       # Prepare for rendering
       flatten! if flatten
+      # Return split parameters required to invert operation
+      # [vertex, left_vertex, right_vertex, displacement]
     end
 
     private
