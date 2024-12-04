@@ -69,5 +69,11 @@ end
 
 
 renderer.window.run do
+  # Choose a random edge and collapse it
+  edge = rand(geometry.edges.count)
+  geometry.collapse(edge)
+  knot1.geometry = geometry
+  knot2.geometry = geometry
+
   renderer.render(scene, camera)
 end

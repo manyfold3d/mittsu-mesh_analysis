@@ -78,6 +78,34 @@ module Mittsu::MeshAnalysis
       @edges.all? { |e| e.complete? }
     end
 
+    def collapse(index, position: :midpoint, flatten: true)
+      # find the edge
+      e0 = edge(index)
+      # Remove the faces on either side
+      @face_indices[e0.left] = nil if e0.left
+      @face_indices[e0.right] = nil if e0.right
+      # Move vertices to new position
+      new_position = case position
+      when :midpoint
+        Mittsu::Vector3.new(
+          (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
+          (@vertices[e0.start].y + @vertices[e0.finish].y) / 2,
+          (@vertices[e0.start].z + @vertices[e0.finish].z) / 2
+        )
+      when :start
+        @vertices[e0.start]
+      when :finish
+        @vertices[e0.finish]
+      else
+        raise ArgumentError.new("position must be :midpoint, :start or :finish")
+      end
+      @vertices[e0.start] = @vertices[e0.finish] = new_position
+      # TODO Recalculate all the wings
+      # ...
+      # Prepare for rendering
+      flatten! if flatten
+    end
+
     private
 
     def find_edge_index(from:, to:)
