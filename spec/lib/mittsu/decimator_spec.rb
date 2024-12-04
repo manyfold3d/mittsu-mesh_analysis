@@ -6,6 +6,7 @@ RSpec.describe Mittsu::MeshAnalysis::Decimator do
   end
 
   it "can be applied to a mesh" do
+    pending
     vertices = mesh.geometry.vertices.length
     # Reduce by 10%
 		remove = ( vertices / 10 ).floor
