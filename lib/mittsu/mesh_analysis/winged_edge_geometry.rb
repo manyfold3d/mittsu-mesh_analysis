@@ -92,6 +92,7 @@ module Mittsu::MeshAnalysis
     def collapse(index, position: :midpoint, flatten: true)
       # find the edge
       e0 = edge(index)
+      return if e0.nil?
       # Remove the faces on either side
       @face_indices[e0.left] = nil if e0.left
       @face_indices[e0.right] = nil if e0.right
