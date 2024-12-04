@@ -78,7 +78,7 @@ module Mittsu::MeshAnalysis
       @edges.all? { |e| e.complete? && !e.degenerate? }
     end
 
-    def split(vertex:, left:, right:, displacement:, position: :midpoint, flatten: true)
+    def split(vertex:, left:, right:, displacement:, flatten: true)
       # Find the vertex and edges that will be split
       # Create new vertex
       # Move existing vertex
@@ -87,9 +87,10 @@ module Mittsu::MeshAnalysis
       # Split right edge
       # Prepare for rendering
       flatten! if flatten
+      raise NotImplementedError
     end
 
-    def collapse(index, position: :midpoint, flatten: true)
+    def collapse(index, flatten: true)
       # find the edge
       e0 = edge(index)
       return if e0.nil?
@@ -97,20 +98,11 @@ module Mittsu::MeshAnalysis
       @face_indices[e0.left] = nil if e0.left
       @face_indices[e0.right] = nil if e0.right
       # Move vertices to new position
-      new_position = case position
-      when :midpoint
-        Mittsu::Vector3.new(
-          (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
-          (@vertices[e0.start].y + @vertices[e0.finish].y) / 2,
-          (@vertices[e0.start].z + @vertices[e0.finish].z) / 2
-        )
-      when :start
-        @vertices[e0.start]
-      when :finish
-        @vertices[e0.finish]
-      else
-        raise ArgumentError.new("position must be :midpoint, :start or :finish")
-      end
+      new_position = Mittsu::Vector3.new(
+        (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
+        (@vertices[e0.start].y + @vertices[e0.finish].y) / 2,
+        (@vertices[e0.start].z + @vertices[e0.finish].z) / 2
+      )
       # TODO: Calculate displacement vector
       # displacement =
       @vertices[e0.start] = @vertices[e0.finish] = new_position
