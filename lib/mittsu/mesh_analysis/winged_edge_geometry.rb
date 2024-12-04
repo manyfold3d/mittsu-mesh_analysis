@@ -56,9 +56,9 @@ module Mittsu::MeshAnalysis
         next if face.nil?
         e0 = edge(face[:edge])
         if e0.left == face[:face]
-          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left).finish)
+          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left).other_vertex(e0.finish))
         elsif e0.right == face[:face]
-          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right).finish)
+          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right).other_vertex(e0.start))
         end
       end
       @faces.compact!
@@ -75,7 +75,7 @@ module Mittsu::MeshAnalysis
     end
 
     def manifold?
-      @edges.all? { |e| e.complete? }
+      @edges.all? { |e| e.complete? && !e.degenerate? }
     end
 
     def split(vertex:, left:, right:, displacement:, position: :midpoint, flatten: true)

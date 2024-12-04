@@ -36,4 +36,10 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   it "has a ccw_right edge" do
     expect(edge.ccw_right).to eq 8
   end
+
+  it "can return the other vertex index" do
+    expect(edge.other_vertex(1)).to eq 2
+    expect(edge.other_vertex(2)).to eq 1
+  end
+
 end

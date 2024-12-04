@@ -23,5 +23,13 @@ module Mittsu::MeshAnalysis
       index && start && finish && left && right && cw_left && ccw_left && cw_right && ccw_right
     end
 
+    def degenerate?
+      start == finish
+    end
+
+    def other_vertex(index)
+      start == index ? finish : start
+    end
+
   end
 end
