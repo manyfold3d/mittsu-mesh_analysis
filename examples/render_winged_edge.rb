@@ -17,7 +17,7 @@ geometry = Mittsu::MeshAnalysis::WingedEdgeGeometry.new
 geometry.from_geometry(Mittsu::TorusGeometry.new(2, 0.8, 12, 32))
 
 # Render as wireframe AND as a shaded surface so that we can still see holes
-material = Mittsu::MeshLambertMaterial.new(color: 0xffff00, wireframe: true)
+material = Mittsu::MeshBasicMaterial.new(color: 0xffff00, wireframe: true)
 knot1 = Mittsu::Mesh.new(geometry, material)
 scene.add(knot1)
 material = Mittsu::MeshLambertMaterial.new(color: 0x00ff00)
