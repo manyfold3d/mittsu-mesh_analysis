@@ -11,7 +11,9 @@ module Mittsu::MeshAnalysis
       @edges = []
     end
 
-    def from_geometry(geometry)
+    def from_geometry(geometry, merge: true)
+      # Merge vertices unless told not to
+      geometry.merge_vertices if merge
       # Vertices are the same
       @vertices = geometry.vertices.clone
       # Faces get converted to an edge reference
