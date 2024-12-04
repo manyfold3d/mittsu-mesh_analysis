@@ -18,11 +18,11 @@ geometry.from_geometry(Mittsu::TorusGeometry.new(2, 0.8, 12, 32))
 
 # Render as wireframe AND as a shaded surface so that we can still see holes
 material = Mittsu::MeshBasicMaterial.new(color: 0xffff00, wireframe: true)
-knot1 = Mittsu::Mesh.new(geometry, material)
-scene.add(knot1)
+wireframe = Mittsu::Mesh.new(geometry, material)
+scene.add(wireframe)
 material = Mittsu::MeshLambertMaterial.new(color: 0x00ff00)
-knot2 = Mittsu::Mesh.new(geometry, material)
-scene.add(knot2)
+surface = Mittsu::Mesh.new(geometry, material)
+scene.add(surface)
 
 light = Mittsu::DirectionalLight.new(0xffffff, 1)
 light.position.set(0.9, 0.9, 1)
@@ -72,8 +72,13 @@ renderer.window.run do
   # Choose a random edge and collapse it
   edge = rand(geometry.edges.count)
   geometry.collapse(edge)
-  knot1.geometry = geometry
-  knot2.geometry = geometry
+  puts "f: #{geometry.faces.count}, v: #{geometry.vertices.count}"
+
+  # Forcibly replace the geometry.
+  # There might be a better way to do
+  # this that just rebuilds the render buffers
+  wireframe.geometry = geometry.clone
+  surface.geometry = geometry.clone
 
   renderer.render(scene, camera)
 end
