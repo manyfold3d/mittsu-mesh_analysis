@@ -20,7 +20,7 @@ geometry.from_geometry(Mittsu::TorusGeometry.new(2, 0.8, 12, 32))
 material = Mittsu::MeshBasicMaterial.new(color: 0xffff00, wireframe: true)
 wireframe = Mittsu::Mesh.new(geometry, material)
 scene.add(wireframe)
-material = Mittsu::MeshLambertMaterial.new(color: 0x00ff00)
+material = Mittsu::MeshLambertMaterial.new(color: 0x800080)
 surface = Mittsu::Mesh.new(geometry, material)
 scene.add(surface)
 
