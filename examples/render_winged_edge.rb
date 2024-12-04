@@ -14,7 +14,7 @@ camera = Mittsu::PerspectiveCamera.new(75.0, ASPECT, 0.1, 1000.0)
 renderer = Mittsu::OpenGL::Renderer.new width: SCREEN_WIDTH, height: SCREEN_HEIGHT, title: 'Rendering Winged Edge Meshes'
 
 geometry = Mittsu::MeshAnalysis::WingedEdgeGeometry.new
-geometry.from_geometry(Mittsu::TorusGeometry.new(1.0, 0.4, 12, 32))
+geometry.from_geometry(Mittsu::TorusGeometry.new(2, 0.8, 12, 32))
 
 # Render as wireframe AND as a shaded surface so that we can still see holes
 material = Mittsu::MeshLambertMaterial.new(color: 0xffff00, wireframe: true)
