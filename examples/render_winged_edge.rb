@@ -35,7 +35,11 @@ ambient_object = Mittsu::Object3D.new
 ambient_object.add(ambient)
 scene.add(ambient_object)
 
+
+camera_container = Mittsu::Object3D.new
+camera_container.add(camera)
 camera.position.z = 5.0
+scene.add(camera_container)
 
 renderer.window.on_resize do |width, height|
   renderer.set_size(width, height)
@@ -43,11 +47,27 @@ renderer.window.on_resize do |width, height|
   camera.update_projection_matrix
 end
 
-renderer.window.run do
-  knot1.rotation.x += 0.01
-  knot1.rotation.y -= 0.01
-  knot2.rotation.x += 0.01
-  knot2.rotation.y -= 0.01
+X_AXIS = Mittsu::Vector3.new(1.0, 0.0, 0.0)
+Y_AXIS = Mittsu::Vector3.new(0.0, 1.0, 0.0)
+mouse_delta = Mittsu::Vector2.new
+last_mouse_position = Mittsu::Vector2.new
 
+renderer.window.on_mouse_button_pressed do |button, position|
+  if button == GLFW::MOUSE_BUTTON_LEFT
+    last_mouse_position.copy(position)
+  end
+end
+
+renderer.window.on_mouse_move do |position|
+  if renderer.window.mouse_button_down?(GLFW::MOUSE_BUTTON_LEFT)
+    mouse_delta.copy(last_mouse_position).sub(position)
+    last_mouse_position.copy(position)
+    camera_container.rotate_on_axis(Y_AXIS, mouse_delta.x * 0.01)
+    camera_container.rotate_on_axis(X_AXIS, mouse_delta.y * 0.01)
+  end
+end
+
+
+renderer.window.run do
   renderer.render(scene, camera)
 end
