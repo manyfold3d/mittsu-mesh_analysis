@@ -51,6 +51,7 @@ module Mittsu::MeshAnalysis
 
     def flatten!
       @faces = @face_indices.map do |face|
+        next if face.nil?
         e0 = edge(face[:edge])
         if e0.left == face[:face]
           Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left).finish)
@@ -58,6 +59,7 @@ module Mittsu::MeshAnalysis
           Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right).finish)
         end
       end
+      @faces.compact!
       compute_face_normals
     end
 
