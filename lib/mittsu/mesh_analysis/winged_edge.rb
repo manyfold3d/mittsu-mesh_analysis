@@ -24,7 +24,7 @@ module Mittsu::MeshAnalysis
     end
 
     def degenerate?
-      @start == @finish || @left == @right || [@cw_left, @cw_right, @ccw_left, @ccw_right].uniq.count != 4
+      @start == @finish || @left == @right || [@index, @cw_left, @cw_right, @ccw_left, @ccw_right].uniq.count != 5
     end
 
     def other_vertex(index)
