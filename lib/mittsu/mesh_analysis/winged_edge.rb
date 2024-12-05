@@ -60,6 +60,12 @@ module Mittsu::MeshAnalysis
       @finish > @start
     end
 
+    # Are two coincident edges pointing the same direction
+    # compared to their shared vertex?
+    def same_direction?(edge)
+      edge.start == @start || edge.finish == @finish
+    end
+
     def flip
       WingedEdge.new(
         index: @index,

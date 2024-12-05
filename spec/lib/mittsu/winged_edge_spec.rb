@@ -163,4 +163,23 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     end
   end
 
+  context "when checking if coincident edges are pointing the same way" do
+    it "return true if edges share a start" do
+      other = described_class.new index: 1, start: 1, finish: 3
+      expect(edge.same_direction?(other)).to be true
+    end
+    it "return true if edges share a finish" do
+      other = described_class.new index: 1, start: 3, finish: 2
+      expect(edge.same_direction?(other)).to be true
+    end
+    it "return false if our edge starts where the other finishes" do
+      other = described_class.new index: 1, start: 3, finish: 1
+      expect(edge.same_direction?(other)).to be false
+    end
+    it "return false if our edge finishes where the other starts" do
+      other = described_class.new index: 1, start: 2, finish: 3
+      expect(edge.same_direction?(other)).to be false
+    end
+  end
+
 end
