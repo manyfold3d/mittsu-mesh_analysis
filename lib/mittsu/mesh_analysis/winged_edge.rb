@@ -60,8 +60,7 @@ module Mittsu::MeshAnalysis
       @finish > @start
     end
 
-    def normalize
-      return self if normalized?
+    def flip
       WingedEdge.new(
         index: @index,
         start: @finish,
@@ -73,6 +72,10 @@ module Mittsu::MeshAnalysis
         cw_right: @cw_left,
         ccw_right: @ccw_left
       )
+    end
+
+    def normalize
+      normalized? ? self : flip
     end
 
     # Stitches another edge into this one
