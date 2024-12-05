@@ -54,4 +54,31 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect{edge.reattach!(from: 5, to: 3)}.to change(edge, :start).by(0).and change(edge, :finish).by(0)
   end
 
+  context "testing for shared vertices with #coincident?" do
+
+    it "matches start to start" do
+      other = described_class.new index: 1, start: 1, finish: 3
+      expect(edge.coincident_at(other)).to eq 1
+    end
+
+    it "matches finish to start" do
+      other = described_class.new index: 1, start: 3, finish: 1
+      expect(edge.coincident_at(other)).to eq 1
+    end
+
+    it "matches start to finish" do
+      other = described_class.new index: 1, start: 2, finish: 3
+      expect(edge.coincident_at(other)).to eq 2
+    end
+
+    it "matches finish to finish" do
+      other = described_class.new index: 1, start: 3, finish: 2
+      expect(edge.coincident_at(other)).to eq 2
+    end
+
+    it "returns nil if not coincident" do
+      other = described_class.new index: 1, start: 3, finish: 4
+      expect(edge.coincident_at(other)).to be_nil
+    end
+  end
 end

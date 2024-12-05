@@ -39,5 +39,12 @@ module Mittsu::MeshAnalysis
       end
     end
 
+    def coincident_at(edge)
+      return @start if edge.start == @start
+      return @finish if edge.start == @finish
+      return @start if edge.finish == @start
+      return @finish if edge.finish == @finish
+    end
+
   end
 end
