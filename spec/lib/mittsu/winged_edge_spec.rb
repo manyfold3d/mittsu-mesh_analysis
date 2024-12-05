@@ -42,4 +42,16 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect(edge.other_vertex(2)).to eq 1
   end
 
+  it "can reattach start to a different vertex" do
+    expect{edge.reattach!(from: 1, to: 3)}.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0)
+  end
+
+  it "can reattach end to a different vertex" do
+    expect{edge.reattach!(from: 2, to: 3)}.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0)
+  end
+
+  it "does not change unattached vertices" do
+    expect{edge.reattach!(from: 5, to: 3)}.to change(edge, :start).by(0).and change(edge, :finish).by(0)
+  end
+
 end
