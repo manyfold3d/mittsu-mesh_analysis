@@ -80,7 +80,19 @@ module Mittsu::MeshAnalysis
     end
 
     def manifold?
-      @edges.all? { |e| e.complete? && !e.degenerate? }
+      @edges.all? do |e|
+        return true if e.nil?
+        e.complete? &&
+          !e.degenerate? &&
+          !@vertices[e.start].nil? &&
+          !@vertices[e.finish].nil? &&
+          !@face_indices[e.left].nil? &&
+          !@face_indices[e.right].nil? &&
+          !@edges[e.cw_left].nil? &&
+          !@edges[e.ccw_left].nil? &&
+          !@edges[e.cw_right].nil? &&
+          !@edges[e.ccw_right].nil?
+      end
     end
 
     def split(vertex:, left:, right:, displacement:, flatten: true)
