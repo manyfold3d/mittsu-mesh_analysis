@@ -50,6 +50,12 @@ module Mittsu::MeshAnalysis
       return (@start == edge.start && @finish == edge.finish) || (@start == edge.finish && @finish == edge.start)
     end
 
+    # Do the two edges share a face?
+    def shared_face(edge)
+      return @left if edge.left == @left || edge.right == @left
+      return @right if edge.left == @right || edge.right == @right
+    end
+
     def normalized?
       @finish > @start
     end

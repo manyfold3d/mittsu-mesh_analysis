@@ -140,4 +140,27 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     end
   end
 
+  context "when checking if edges share a face" do
+    it "returns index if they share the same left face" do
+      other = described_class.new index: 1, start: 1, finish: 2, left: 3
+      expect(edge.shared_face(other)).to eq 3
+    end
+    it "returns index if they share the same right face" do
+      other = described_class.new index: 1, start: 1, finish: 2, right: 4
+      expect(edge.shared_face(other)).to eq 4
+    end
+    it "returns index if they share opposite faces (l/r)" do
+      other = described_class.new index: 1, start: 1, finish: 2, right: 3
+      expect(edge.shared_face(other)).to eq 3
+    end
+    it "returns index if they share opposite faces (r/l)" do
+      other = described_class.new index: 1, start: 1, finish: 2, left: 4
+      expect(edge.shared_face(other)).to eq 4
+    end
+    it "returns nil if they do not share a face" do
+      other = described_class.new index: 1, start: 1, finish: 2, left: 9, right: 10
+      expect(edge.shared_face(other)).to be_nil
+    end
+  end
+
 end
