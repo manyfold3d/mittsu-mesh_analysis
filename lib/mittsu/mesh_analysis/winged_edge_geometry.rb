@@ -11,7 +11,7 @@ module Mittsu::MeshAnalysis
       @edges = []
     end
 
-    def from_geometry(geometry, merge: true)
+    def from_geometry(geometry, merge: true, normalize: true)
       # Merge vertices unless told not to
       geometry.merge_vertices if merge
       # Vertices are the same
@@ -47,6 +47,7 @@ module Mittsu::MeshAnalysis
         # Store face->edge reference
         @face_indices[index] = {face: index, edge: e1}
       end
+      normalize! if normalize
       # Calculate renderable mesh after import
       flatten!
     end
@@ -63,6 +64,10 @@ module Mittsu::MeshAnalysis
       end
       @faces.compact!
       compute_face_normals
+    end
+
+    def normalize!
+      @edges = @edges.map(&:normalize)
     end
 
     def between(v1, v2)

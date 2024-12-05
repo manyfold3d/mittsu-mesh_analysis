@@ -50,6 +50,25 @@ module Mittsu::MeshAnalysis
       return (@start == edge.start && @finish == edge.finish) || (@start == edge.finish && @finish == edge.start)
     end
 
+    def normalized?
+      @finish > @start
+    end
+
+    def normalize
+      return self if normalized?
+      WingedEdge.new(
+        index: @index,
+        start: @finish,
+        finish: @start,
+        left: @right,
+        right: @left,
+        cw_left: @cw_right,
+        ccw_left: @ccw_right,
+        cw_right: @cw_left,
+        ccw_right: @ccw_left
+      )
+    end
+
     # Stitches another edge into this one
     # The edges must share a face and a vertex
     # The edge passed as an argument will be invalid

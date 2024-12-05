@@ -98,4 +98,46 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
       expect(edge.coincident_at(other)).to be_nil
     end
   end
+
+  context "when normalizing an edge with start higher than finish" do
+    let(:edge) { described_class.new(index: 0, start: 2, finish: 1, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8).normalize }
+
+    it "preserves index" do
+      expect(edge.index).to eq 0
+    end
+
+    it "should swap vertices" do
+      expect(edge.start).to eq 1
+      expect(edge.finish).to eq 2
+    end
+
+    it "should swap faces" do
+      expect(edge.left).to eq 4
+      expect(edge.right).to eq 3
+    end
+
+    it "should rotate wings" do
+      expect(edge.cw_left).to eq 7
+      expect(edge.ccw_left).to eq 8
+      expect(edge.cw_right).to eq 5
+      expect(edge.ccw_right).to eq 6
+    end
+  end
+
+  context "when normalizing an edge start is lower than finish" do
+    let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8).normalize }
+
+    it "should not swap anything" do
+      expect(edge.index).to eq 0
+      expect(edge.start).to eq 1
+      expect(edge.finish).to eq 2
+      expect(edge.left).to eq 3
+      expect(edge.right).to eq 4
+      expect(edge.cw_left).to eq 5
+      expect(edge.ccw_left).to eq 6
+      expect(edge.cw_right).to eq 7
+      expect(edge.ccw_right).to eq 8
+    end
+  end
+
 end
