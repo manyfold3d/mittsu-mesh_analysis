@@ -31,11 +31,23 @@ module Mittsu::MeshAnalysis
       @start == index ? @finish : @start
     end
 
-    def reattach!(from:, to:)
+    def reattach_vertex!(from:, to:)
       if @start == from
         @start = to
       elsif @finish == from
         @finish = to
+      end
+    end
+
+    def reattach_edge!(from:, to:)
+      if @cw_left == from
+        @cw_left = to
+      elsif @ccw_left == from
+        @ccw_left = to
+      elsif @cw_right == from
+        @cw_right = to
+      elsif @ccw_right == from
+        @ccw_right = to
       end
     end
 
