@@ -54,7 +54,24 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect{edge.reattach!(from: 5, to: 3)}.to change(edge, :start).by(0).and change(edge, :finish).by(0)
   end
 
-  context "testing for shared vertices with #coincident?" do
+  context "testing for duplication with #colinear?" do
+    it "returns true if start and finish are the same" do
+      other = described_class.new index: 1, start: 1, finish: 2
+      expect(edge.colinear?(other)).to be true
+    end
+
+    it "returns true if start and finish are the same but flipped round" do
+      other = described_class.new index: 1, start: 2, finish: 1
+      expect(edge.colinear?(other)).to be true
+    end
+
+    it "returns false if either start or finish are different" do
+      other = described_class.new index: 1, start: 1, finish: 3
+      expect(edge.colinear?(other)).to be false
+    end
+  end
+
+  context "testing for shared vertices with #coincident_at" do
 
     it "matches start to start" do
       other = described_class.new index: 1, start: 1, finish: 3

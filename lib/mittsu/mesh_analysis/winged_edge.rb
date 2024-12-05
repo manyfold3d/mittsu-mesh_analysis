@@ -46,5 +46,17 @@ module Mittsu::MeshAnalysis
       return @finish if edge.finish == @finish
     end
 
+    def colinear?(edge)
+      return (@start == edge.start && @finish == edge.finish) || (@start == edge.finish && @finish == edge.start)
+    end
+
+    # Stitches another edge into this one
+    # The edges must share a face and a vertex
+    # The edge passed as an argument will be invalid
+    # if operation succeeds (returns true) and should
+    # be discarded
+    def stitch(edge)
+      true
+    end
   end
 end
