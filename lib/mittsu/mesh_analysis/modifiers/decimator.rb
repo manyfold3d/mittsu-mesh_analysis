@@ -2,19 +2,24 @@ class Mittsu::MeshAnalysis::Decimator
 	# very roughly based on SimplifyModifier from Three.js, but pretty much rewritten from scratch
 
 	def initialize(geometry)
-		@geometry = geometry.clone
+		@geometry = Mittsu::MeshAnalysis::WingedEdgeGeometry.new
+		@geometry.from_geometry(geometry)
 	end
 
-	def decimate(vertex_count_to_remove)
-		edges = calculate_edge_data.sort_by(&:collapse_cost).first(vertex_count_to_remove)
-		edges.each { |e| collapse e }
+	def decimate(target_face_count)
+		edge_collapses = edge_collapse_costs.sort_by{|x| x[:cost]}
+		loop do
+			break if @geometry.faces.count <= target_face_count
+			@geometry.collapse(edge_collapses.pop[:edge_index])
+		end
 		@geometry
 	end
 
-	def calculate_edge_data
-		[]
+	def edge_collapse_costs
+		@geometry.edges.map { |e| {edge_index: e.index, cost: rand()} }
 	end
 
 	def collapse(edge)
+		@geometry.collapse(edge)
 	end
 end
