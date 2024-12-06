@@ -6,7 +6,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     let(:plane) { Mittsu::PlaneGeometry.new(1,1,1,1) }
 
     before do
-      subject.from_geometry(plane)
+      subject.from_geometry(plane, normalize: false)
     end
 
     it "preserves number of faces from original geometry" do
