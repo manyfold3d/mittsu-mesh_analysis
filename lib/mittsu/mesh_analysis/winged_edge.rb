@@ -32,11 +32,13 @@ module Mittsu::MeshAnalysis
     end
 
     def reattach_vertex!(from:, to:)
+      was = self.clone
       if @start == from
         @start = to
       elsif @finish == from
         @finish = to
       end
+      raise ArgumentError.new("was #{was.inspect}, now: #{inspect}") if degenerate?
     end
 
     def reattach_edge!(from:, to:)
@@ -49,6 +51,7 @@ module Mittsu::MeshAnalysis
       elsif @ccw_right == from
         @ccw_right = to
       end
+      raise ArgumentError.new(self.inspect) if degenerate?
     end
 
     def coincident_at(edge)
@@ -107,16 +110,20 @@ module Mittsu::MeshAnalysis
       return nil unless face && edge.coincident_at(edge)
       # Flip incoming edge if it's not pointing the same way
       edge = edge.flip unless same_direction?(edge)
+      raise ArgumentError if edge.degenerate? || degenerate? || !same_direction?(edge)
       # Stitch left side of other edge if our left face is the shared one, or vice versa
+      puts face
       if face == @left
         @cw_left = edge.cw_left
         @ccw_left = edge.ccw_left
         @left = edge.left
+        raise ArgumentError.new(self.inspect) if degenerate?
         return @left
       else
         @cw_right = edge.cw_right
         @ccw_right = edge.ccw_right
         @right = edge.right
+        raise ArgumentError.new(self.inspect) if degenerate?
         return @right
       end
     end
