@@ -99,10 +99,26 @@ module Mittsu::MeshAnalysis
     # Stitches another edge into this one
     # The edges must share a face and a vertex
     # The edge passed as an argument will be invalid
-    # if operation succeeds (returns true) and should
-    # be discarded
-    def stitch(edge)
-      true
+    # Returns nil if not stiched, or the face index that might need
+    # an edge reference update if it was
+    def stitch!(edge)
+      # Make sure the edges share a vertex and face
+      face = shared_face(edge)
+      return nil unless face && edge.coincident_at(edge)
+      # Flip incoming edge if it's not pointing the same way
+      edge = edge.flip unless same_direction?(edge)
+      # Stitch left side of other edge if our left face is the shared one, or vice versa
+      if face == @left
+        @cw_left = edge.cw_left
+        @ccw_left = edge.ccw_left
+        @left = edge.left
+        return @left
+      else
+        @cw_right = edge.cw_right
+        @ccw_right = edge.ccw_right
+        @right = edge.right
+        return @right
+      end
     end
   end
 end
