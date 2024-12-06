@@ -52,6 +52,11 @@ module Mittsu::MeshAnalysis
       flatten!
     end
 
+    def edge_length(index)
+      e0 = edge(index)
+      @vertices[e0.start].distance_to(@vertices[e0.finish])
+    end
+
     def flatten!
       @faces = @face_indices.map do |face|
         next if face.nil?

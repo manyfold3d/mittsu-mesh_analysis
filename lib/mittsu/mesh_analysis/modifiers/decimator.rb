@@ -15,7 +15,7 @@ class Mittsu::MeshAnalysis::Decimator
 	end
 
 	def edge_collapse_costs
-		@geometry.edges.map { |e| e ? {edge_index: e.index, cost: rand()} : nil }.compact
+		@geometry.edges.map { |e| e ? {edge_index: e.index, cost: @geometry.edge_length(e.index)} : nil }.compact
 	end
 
 	def collapse(edge)
