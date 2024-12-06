@@ -13,8 +13,8 @@ camera = Mittsu::PerspectiveCamera.new(75.0, ASPECT, 0.1, 1000.0)
 
 renderer = Mittsu::OpenGL::Renderer.new width: SCREEN_WIDTH, height: SCREEN_HEIGHT, title: 'Collapsing edges with a winged edge meshes'
 
-geometry = Mittsu::MeshAnalysis::WingedEdgeGeometry.new
-geometry.from_geometry(Mittsu::TorusGeometry.new(2, 0.8, 12, 32))
+geometry = Mittsu::TorusGeometry.new(2, 0.8, 12, 32)#Mittsu::MeshAnalysis::WingedEdgeGeometry.new
+#geometry.from_geometry()
 
 # Render as wireframe AND as a shaded surface so that we can still see holes
 material = Mittsu::MeshBasicMaterial.new(color: 0xffff00, wireframe: true)
@@ -67,18 +67,21 @@ renderer.window.on_mouse_move do |position|
   end
 end
 
+decimator = Mittsu::MeshAnalysis::Decimator.new(geometry)
+target = geometry.faces.count
 
 renderer.window.run do
-  # Choose a random edge and collapse it
-  edge = rand(geometry.edges.count)
-  geometry.collapse(edge)
-  puts "f: #{geometry.faces.count}, v: #{geometry.vertices.count}"
+  # Decimate by 0.1%
+  target = (target * 0.995).floor
+  exit if target == 0
+  new_geometry = decimator.decimate(target)
+  puts "f: #{new_geometry.faces.count}, v: #{new_geometry.vertices.count}"
 
   # Forcibly replace the geometry.
   # There might be a better way to do
   # this that just rebuilds the render buffers
-  wireframe.geometry = geometry.clone
-  surface.geometry = geometry.clone
+  wireframe.geometry = new_geometry.clone
+  surface.geometry = new_geometry.clone
 
   renderer.render(scene, camera)
 end

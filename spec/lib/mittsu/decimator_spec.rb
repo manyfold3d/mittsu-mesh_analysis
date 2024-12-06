@@ -6,12 +6,11 @@ RSpec.describe Mittsu::MeshAnalysis::Decimator do
   end
 
   it "can be applied to a mesh" do
-    pending
-    vertices = mesh.geometry.vertices.length
+    faces = mesh.geometry.faces.length
     # Reduce by 10%
-		remove = ( vertices / 10 ).floor
-		mesh.geometry = described_class.new( mesh.geometry).decimate(remove)
-    expect(mesh.geometry.vertices.length).to eq vertices - remove
+    target = faces * 0.9
+		mesh.geometry = described_class.new( mesh.geometry).decimate(target)
+    expect(mesh.geometry.faces.length).to be_within(1).of(target)
   end
 
 end
