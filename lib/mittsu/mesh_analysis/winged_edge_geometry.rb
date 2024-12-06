@@ -56,10 +56,11 @@ module Mittsu::MeshAnalysis
       @faces = @face_indices.map do |face|
         next if face.nil?
         e0 = edge(face[:edge])
+        next if e0.nil?
         if e0.left == face[:face]
-          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left).other_vertex(e0.finish))
+          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.ccw_left)&.other_vertex(e0.finish)
         elsif e0.right == face[:face]
-          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right).other_vertex(e0.start))
+          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right)&.other_vertex(e0.start)) if e0.finish && e0.start && edge(e0.ccw_right)&.other_vertex(e0.start)
         end
       end
       @faces.compact!
