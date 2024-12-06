@@ -72,7 +72,8 @@ target = geometry.faces.count
 
 renderer.window.run do
   # Decimate by 0.1%
-  target = (target * 0.999).floor
+  target = (target * 0.995).floor
+  exit if target == 0
   new_geometry = decimator.decimate(target)
   puts "f: #{new_geometry.faces.count}, v: #{new_geometry.vertices.count}"
 
