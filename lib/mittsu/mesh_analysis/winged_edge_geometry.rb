@@ -72,8 +72,11 @@ module Mittsu::MeshAnalysis
     end
 
     def between(v1, v2)
-      index = find_edge_index(from: v1, to: v2) || find_edge_index(from: v2, to: v1)
-      edge(index)
+      edge(indexes_between(v1,v2).first)
+    end
+
+    def indexes_between(v1, v2)
+      find_edge_indexes(from: v1, to: v2) + find_edge_indexes(from: v2, to: v1)
     end
 
     def edge(index)
@@ -85,6 +88,7 @@ module Mittsu::MeshAnalysis
         return true if e.nil?
         e.complete? &&
           !e.degenerate? &&
+          indexes_between(e.start, e.finish).count <= 1 &&
           !@vertices[e.start].nil? &&
           !@vertices[e.finish].nil? &&
           !@face_indices[e.left].nil? &&
@@ -136,13 +140,13 @@ module Mittsu::MeshAnalysis
 
     private
 
-    def find_edge_index(from:, to:)
-      @edges.find_index { |e| (e.start == from && e.finish == to) }
+    def find_edge_indexes(from:, to:)
+      @edges.select { |e| !e.nil? && (e.start == from && e.finish == to) }.map(&:index)
     end
 
     def add_edge(v1:, v2:, face:)
       # Is there already an edge going the other way?
-      index = find_edge_index(from: v2, to: v1)
+      index = find_edge_indexes(from: v2, to: v1).first
       if index
         edge = edge(index)
         raise "Mesh conflict" unless edge.right.nil?
