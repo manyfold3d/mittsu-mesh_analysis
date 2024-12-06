@@ -1,5 +1,4 @@
 class Mittsu::MeshAnalysis::Decimator
-	# very roughly based on SimplifyModifier from Three.js, but pretty much rewritten from scratch
 
 	def initialize(geometry)
 		@geometry = Mittsu::MeshAnalysis::WingedEdgeGeometry.new
@@ -16,7 +15,7 @@ class Mittsu::MeshAnalysis::Decimator
 	end
 
 	def edge_collapse_costs
-		@geometry.edges.map { |e| {edge_index: e.index, cost: rand()} }
+		@geometry.edges.map { |e| e ? {edge_index: e.index, cost: rand()} : nil }.compact
 	end
 
 	def collapse(edge)
