@@ -57,6 +57,7 @@ module Mittsu::MeshAnalysis
         next if face.nil?
         e0 = edge(face[:edge])
         next if e0.nil?
+        puts "error accessing edge #{face[:edge]} for face #{face[:face]}" if e0.nil?
         if e0.left == face[:face]
           Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.ccw_left)&.other_vertex(e0.finish)
         elsif e0.right == face[:face]
@@ -76,6 +77,7 @@ module Mittsu::MeshAnalysis
     end
 
     def indexes_between(v1, v2)
+      puts "between #{v1} and #{v2}"
       find_edge_indexes(from: v1, to: v2) + find_edge_indexes(from: v2, to: v1)
     end
 
@@ -86,7 +88,18 @@ module Mittsu::MeshAnalysis
     def manifold?
       @edges.all? do |e|
         return true if e.nil?
-        e.complete? &&
+        raise "edge #{e.index} is incomplete" unless e.complete?
+        raise "edge #{e.index} is degenerate" if e.degenerate?
+        raise "edge #{e.index} is duplicated" if indexes_between(e.start, e.finish).count > 1
+        raise "edge #{e.index} references missing start vertex #{e.start}" if @vertices[e.start].nil?
+        raise "edge #{e.index} references missing finish vertex #{e.finish}" if @vertices[e.finish].nil?
+        raise "edge #{e.index} references missing left face #{e.left}" if @face_indices[e.left].nil?
+        raise "edge #{e.index} references missing right face #{e.right}" if @face_indices[e.right].nil?
+        raise "edge #{e.index} references missing cw left edge #{e.cw_left}" if @edges[e.cw_left].nil?
+        raise "edge #{e.index} references missing ccw left edge #{e.ccw_left}" if @edges[e.ccw_left].nil?
+        raise "edge #{e.index} references missing cw right edge #{e.cw_right}" if @edges[e.cw_right].nil?
+        raise "edge #{e.index} references missing ccw right edge #{e.ccw_right}" if @edges[e.ccw_right].nil?
+        ok = e.complete? &&
           !e.degenerate? &&
           indexes_between(e.start, e.finish).count <= 1 &&
           !@vertices[e.start].nil? &&
@@ -97,6 +110,8 @@ module Mittsu::MeshAnalysis
           !@edges[e.ccw_left].nil? &&
           !@edges[e.cw_right].nil? &&
           !@edges[e.ccw_right].nil?
+        puts " -- #{e.inspect}" unless ok
+        ok
       end
     end
 
@@ -116,8 +131,10 @@ module Mittsu::MeshAnalysis
     # and merging everything onto the start vertex instead.
     # If the result would be degenerate in some way, the mesh is unchanged
     def collapse(index, flatten: true)
+      puts "collapsing edge #{index}"
       # find the edge
       e0 = edge(index)
+      puts e0.inspect
       return if e0.nil?
 
       # Move vertices to new position
@@ -135,6 +152,7 @@ module Mittsu::MeshAnalysis
       ccw_left = @edges[e0.ccw_left]
       if cw_left && ccw_left
         face = cw_left.stitch!(ccw_left)
+        raise ArgumentError.new("tried to stitch #{ccw_left.inspect} into #{cwl.inspect} and got #{cw_left.inspect}") if cw_left.degenerate?
         @edges[cw_left.index] = cw_left
         @face_indices[face] = {face: face, edge: cw_left.index} if face
       end
@@ -144,6 +162,7 @@ module Mittsu::MeshAnalysis
       ccw_right = ccwr = @edges[e0.ccw_right]
       if cw_right && ccw_right
         face = ccw_right.stitch!(cw_right)
+        raise ArgumentError.new("tried to stitch #{cw_right.inspect} into #{ccwr.inspect} and got #{ccw_right.inspect}") if ccw_right.degenerate?
         @edges[ccw_right.index] = ccw_right
         @face_indices[face] = {face: face, edge: ccw_right.index} if face
       end
@@ -158,6 +177,9 @@ module Mittsu::MeshAnalysis
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
+      puts "reattaching: left #{ccw_left&.index} -> #{cw_left&.index}"
+      puts "reattaching: right #{cw_right&.index} -> #{ccw_right&.index}"
+      puts "reattaching: finish #{e0.finish} -> #{e0.start}"
       @face_indices.each do |f|
         next if f.nil?
         f[:edge] = cw_left&.index if f[:edge] == ccw_left&.index
@@ -171,6 +193,7 @@ module Mittsu::MeshAnalysis
       end
 
       # Prepare for rendering
+      raise "SHIT" unless manifold?
       flatten! if flatten
       # Return split parameters required to invert operation
       # [vertex, left_vertex, right_vertex, displacement]
