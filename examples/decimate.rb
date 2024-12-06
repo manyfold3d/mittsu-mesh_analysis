@@ -13,8 +13,7 @@ camera = Mittsu::PerspectiveCamera.new(75.0, ASPECT, 0.1, 1000.0)
 
 renderer = Mittsu::OpenGL::Renderer.new width: SCREEN_WIDTH, height: SCREEN_HEIGHT, title: 'Collapsing edges with a winged edge meshes'
 
-geometry = Mittsu::TorusGeometry.new(2, 0.8, 12, 32)#Mittsu::MeshAnalysis::WingedEdgeGeometry.new
-#geometry.from_geometry()
+geometry = Mittsu::TorusKnotGeometry.new(2, 0.8, 64, 16)
 
 # Render as wireframe AND as a shaded surface so that we can still see holes
 material = Mittsu::MeshBasicMaterial.new(color: 0xffff00, wireframe: true)
