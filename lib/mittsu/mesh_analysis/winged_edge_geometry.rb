@@ -112,13 +112,14 @@ module Mittsu::MeshAnalysis
       raise NotImplementedError
     end
 
+    # Collapses an edge by removing the finish vertex, left and right faces,
+    # and merging everything onto the start vertex instead.
+    # If the result would be degenerate in some way, the mesh is unchanged
     def collapse(index, flatten: true)
       # find the edge
       e0 = edge(index)
       return if e0.nil?
-      # Remove the faces on either side
-      @face_indices[e0.left] = nil if e0.left
-      @face_indices[e0.right] = nil if e0.right
+
       # Move vertices to new position
       new_position = Mittsu::Vector3.new(
         (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
@@ -127,11 +128,48 @@ module Mittsu::MeshAnalysis
       )
       # TODO: Calculate displacement vector
       # displacement =
-      @vertices[e0.start] = @vertices[e0.finish] = new_position
-      # TODO: Merge edges
-      # TODO: Remove one vertex
-      # TODO: Recalculate all the wings
-      # ...
+      @vertices[e0.start] = new_position
+
+      # Collapse left face
+      cw_left = cwl = @edges[e0.cw_left]
+      ccw_left = @edges[e0.ccw_left]
+      if cw_left && ccw_left
+        face = cw_left.stitch!(ccw_left)
+        @edges[cw_left.index] = cw_left
+        @face_indices[face] = {face: face, edge: cw_left.index} if face
+      end
+
+      # Collapse right face
+      cw_right = @edges[e0.cw_right]
+      ccw_right = ccwr = @edges[e0.ccw_right]
+      if cw_right && ccw_right
+        face = ccw_right.stitch!(cw_right)
+        @edges[ccw_right.index] = ccw_right
+        @face_indices[face] = {face: face, edge: ccw_right.index} if face
+      end
+
+      # Remove two faces, one vertex, and three edges
+      @face_indices[e0.left] = nil if e0.left
+      @face_indices[e0.right] = nil if e0.right
+      @vertices[e0.finish] = Mittsu::Vector3.new(0,0,0) # This can become nil later when we compact and reindex things
+      @edges[e0.ccw_left] = nil
+      @edges[e0.cw_right] = nil
+      @edges[e0.index] = nil
+
+      # Reattach edges to remove old indexes
+      # This could be much more efficient by walking round the wings
+      @face_indices.each do |f|
+        next if f.nil?
+        f[:edge] = cw_left&.index if f[:edge] == ccw_left&.index
+        f[:edge] = ccw_right&.index if f[:edge] == cw_right&.index
+      end
+      @edges.each do |e|
+        next if e.nil?
+        e.reattach_edge!(from: ccw_left.index, to: cw_left.index) if ccw_left && cw_left
+        e.reattach_edge!(from: cw_right.index, to: ccw_right.index) if ccw_right && cw_right
+        e.reattach_vertex!(from: e0.finish, to: e0.start) if e0
+      end
+
       # Prepare for rendering
       flatten! if flatten
       # Return split parameters required to invert operation
