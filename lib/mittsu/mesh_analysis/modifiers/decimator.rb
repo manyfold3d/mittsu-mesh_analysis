@@ -5,6 +5,7 @@ class Mittsu::MeshAnalysis::Decimator
   end
 
   def decimate(target_face_count)
+    @geometry.flatten!
     edge_collapses = edge_collapse_costs.sort_by { |x| x[:cost] }
     loop do
       break if @geometry.faces.count <= target_face_count
