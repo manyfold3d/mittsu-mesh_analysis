@@ -18,7 +18,7 @@ class Mittsu::MeshAnalysis::Decimator
     @geometry.edges.map { |e|
       e ? {
         edge_index: e.index,
-        cost: @geometry.edge_length(e.index)
+        cost: @geometry.collapse_cost(e.index)
       } : nil
     }.compact
   end
