@@ -9,8 +9,7 @@ RSpec.describe Mittsu::MeshAnalysis::Decimator do
     faces = mesh.geometry.faces.length
     # Reduce by 10%
     target = faces * 0.9
-		mesh.geometry = described_class.new( mesh.geometry).decimate(target)
+    mesh.geometry = described_class.new(mesh.geometry).decimate(target)
     expect(mesh.geometry.faces.length).to be_within(1).of(target)
   end
-
 end

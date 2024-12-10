@@ -1,8 +1,8 @@
-$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
-require 'mittsu'
-require 'mittsu/mesh_analysis'
-require 'mittsu/opengl'
+require "mittsu"
+require "mittsu/mesh_analysis"
+require "mittsu/opengl"
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -11,7 +11,7 @@ ASPECT = SCREEN_WIDTH.to_f / SCREEN_HEIGHT.to_f
 scene = Mittsu::Scene.new
 camera = Mittsu::PerspectiveCamera.new(75.0, ASPECT, 0.1, 1000.0)
 
-renderer = Mittsu::OpenGL::Renderer.new width: SCREEN_WIDTH, height: SCREEN_HEIGHT, title: 'Collapsing edges with a winged edge meshes'
+renderer = Mittsu::OpenGL::Renderer.new width: SCREEN_WIDTH, height: SCREEN_HEIGHT, title: "Collapsing edges with a winged edge meshes"
 
 geometry = Mittsu::TorusKnotGeometry.new(2, 0.8, 64, 16)
 
@@ -33,7 +33,6 @@ ambient = Mittsu::AmbientLight.new(0x3f3f3f)
 ambient_object = Mittsu::Object3D.new
 ambient_object.add(ambient)
 scene.add(ambient_object)
-
 
 camera_container = Mittsu::Object3D.new
 camera_container.add(camera)

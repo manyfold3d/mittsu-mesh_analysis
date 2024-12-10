@@ -2,7 +2,6 @@ require "mittsu/mesh_analysis/winged_edge"
 
 module Mittsu::MeshAnalysis
   class WingedEdgeGeometry < Mittsu::Geometry
-
     attr_reader :vertices, :edges
 
     def initialize
@@ -77,7 +76,7 @@ module Mittsu::MeshAnalysis
     end
 
     def between(v1, v2)
-      edge(indexes_between(v1,v2).first)
+      edge(indexes_between(v1, v2).first)
     end
 
     def indexes_between(v1, v2)
@@ -136,7 +135,7 @@ module Mittsu::MeshAnalysis
       @vertices[e0.start] = new_position
 
       # Collapse left face
-      cw_left = cwl = @edges[e0.cw_left]
+      cw_left = @edges[e0.cw_left]
       ccw_left = @edges[e0.ccw_left]
       if cw_left && ccw_left
         face = cw_left.stitch!(ccw_left)
@@ -146,7 +145,7 @@ module Mittsu::MeshAnalysis
 
       # Collapse right face
       cw_right = @edges[e0.cw_right]
-      ccw_right = ccwr = @edges[e0.ccw_right]
+      ccw_right = @edges[e0.ccw_right]
       if cw_right && ccw_right
         face = ccw_right.stitch!(cw_right)
         @edges[ccw_right.index] = ccw_right
@@ -156,7 +155,7 @@ module Mittsu::MeshAnalysis
       # Remove two faces, one vertex, and three edges
       @face_indices[e0.left] = nil if e0.left
       @face_indices[e0.right] = nil if e0.right
-      @vertices[e0.finish] = Mittsu::Vector3.new(0,0,0) # This can become nil later when we compact and reindex things
+      @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
       @edges[e0.ccw_left] = nil
       @edges[e0.cw_right] = nil
       @edges[e0.index] = nil
@@ -194,11 +193,11 @@ module Mittsu::MeshAnalysis
         edge = edge(index)
         raise "Mesh conflict" unless edge.right.nil?
         edge.right = face
-        return false, index
+        [false, index]
       else
         index = @edges.count
         @edges << WingedEdge.new(index: index, start: v1, finish: v2, left: face)
-        return true, index
+        [true, index]
       end
     end
   end

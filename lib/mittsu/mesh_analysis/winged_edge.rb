@@ -1,6 +1,5 @@
 module Mittsu::MeshAnalysis
   class WingedEdge
-
     attr_accessor :start, :finish, :left, :right, :cw_left, :ccw_left, :cw_right, :ccw_right, :index
 
     def initialize(index:, start:, finish:, left: nil, right: nil, cw_left: nil, ccw_left: nil, cw_right: nil, ccw_right: nil)
@@ -28,7 +27,7 @@ module Mittsu::MeshAnalysis
     end
 
     def other_vertex(index)
-      @start == index ? @finish : @start
+      (@start == index) ? @finish : @start
     end
 
     def reattach_vertex!(from:, to:)
@@ -55,17 +54,17 @@ module Mittsu::MeshAnalysis
       return @start if edge.start == @start
       return @finish if edge.start == @finish
       return @start if edge.finish == @start
-      return @finish if edge.finish == @finish
+      @finish if edge.finish == @finish
     end
 
     def colinear?(edge)
-      return (@start == edge.start && @finish == edge.finish) || (@start == edge.finish && @finish == edge.start)
+      (@start == edge.start && @finish == edge.finish) || (@start == edge.finish && @finish == edge.start)
     end
 
     # Do the two edges share a face?
     def shared_face(edge)
       return @left if edge.left == @left || edge.right == @left
-      return @right if edge.left == @right || edge.right == @right
+      @right if edge.left == @right || edge.right == @right
     end
 
     def normalized?
@@ -112,12 +111,12 @@ module Mittsu::MeshAnalysis
         @cw_left = edge.cw_left
         @ccw_left = edge.ccw_left
         @left = edge.left
-        return @left
+        @left
       else
         @cw_right = edge.cw_right
         @ccw_right = edge.ccw_right
         @right = edge.right
-        return @right
+        @right
       end
     end
   end

@@ -1,5 +1,5 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
-  let(:edge) { described_class.new index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8}
+  let(:edge) { described_class.new index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8 }
 
   it "has an index" do
     expect(edge.index).to eq 0
@@ -43,15 +43,15 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   it "can reattach start to a different vertex" do
-    expect{edge.reattach_vertex!(from: 1, to: 3)}.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0)
+    expect { edge.reattach_vertex!(from: 1, to: 3) }.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0)
   end
 
   it "can reattach end to a different vertex" do
-    expect{edge.reattach_vertex!(from: 2, to: 3)}.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0)
+    expect { edge.reattach_vertex!(from: 2, to: 3) }.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0)
   end
 
   it "does not change unattached vertices" do
-    expect{edge.reattach_vertex!(from: 5, to: 3)}.to change(edge, :start).by(0).and change(edge, :finish).by(0)
+    expect { edge.reattach_vertex!(from: 5, to: 3) }.to change(edge, :start).by(0).and change(edge, :finish).by(0)
   end
 
   context "testing for duplication with #colinear?" do
@@ -72,7 +72,6 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   context "testing for shared vertices with #coincident_at" do
-
     it "matches start to start" do
       other = described_class.new index: 1, start: 1, finish: 3
       expect(edge.coincident_at(other)).to eq 1
@@ -100,23 +99,23 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   context "when normalizing an edge with start higher than finish" do
-    let(:edge) { described_class.new(index: 0, start: 2, finish: 1, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8).normalize }
+    let(:edge) { described_class.new(index: 0, start: 2, finish: 1, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8).normalize }
 
     it "preserves index" do
       expect(edge.index).to eq 0
     end
 
-    it "should swap vertices" do
+    it "swaps vertices" do
       expect(edge.start).to eq 1
       expect(edge.finish).to eq 2
     end
 
-    it "should swap faces" do
+    it "swaps faces" do
       expect(edge.left).to eq 4
       expect(edge.right).to eq 3
     end
 
-    it "should rotate wings" do
+    it "rotates wings" do
       expect(edge.cw_left).to eq 7
       expect(edge.ccw_left).to eq 8
       expect(edge.cw_right).to eq 5
@@ -125,9 +124,9 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   context "when normalizing an edge start is lower than finish" do
-    let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right:8).normalize }
+    let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8).normalize }
 
-    it "should not swap anything" do
+    it "does not swap anything" do
       expect(edge.index).to eq 0
       expect(edge.start).to eq 1
       expect(edge.finish).to eq 2
@@ -145,18 +144,22 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
       other = described_class.new index: 1, start: 1, finish: 2, left: 3
       expect(edge.shared_face(other)).to eq 3
     end
+
     it "returns index if they share the same right face" do
       other = described_class.new index: 1, start: 1, finish: 2, right: 4
       expect(edge.shared_face(other)).to eq 4
     end
+
     it "returns index if they share opposite faces (l/r)" do
       other = described_class.new index: 1, start: 1, finish: 2, right: 3
       expect(edge.shared_face(other)).to eq 3
     end
+
     it "returns index if they share opposite faces (r/l)" do
       other = described_class.new index: 1, start: 1, finish: 2, left: 4
       expect(edge.shared_face(other)).to eq 4
     end
+
     it "returns nil if they do not share a face" do
       other = described_class.new index: 1, start: 1, finish: 2, left: 9, right: 10
       expect(edge.shared_face(other)).to be_nil
@@ -168,18 +171,20 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
       other = described_class.new index: 1, start: 1, finish: 3
       expect(edge.same_direction?(other)).to be true
     end
+
     it "return true if edges share a finish" do
       other = described_class.new index: 1, start: 3, finish: 2
       expect(edge.same_direction?(other)).to be true
     end
+
     it "return false if our edge starts where the other finishes" do
       other = described_class.new index: 1, start: 3, finish: 1
       expect(edge.same_direction?(other)).to be false
     end
+
     it "return false if our edge finishes where the other starts" do
       other = described_class.new index: 1, start: 2, finish: 3
       expect(edge.same_direction?(other)).to be false
     end
   end
-
 end

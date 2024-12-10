@@ -1,9 +1,8 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
-
   subject { described_class.new }
 
   context "with existing geometry loaded in" do
-    let(:plane) { Mittsu::PlaneGeometry.new(1,1,1,1) }
+    let(:plane) { Mittsu::PlaneGeometry.new(1, 1, 1, 1) }
 
     before do
       subject.from_geometry(plane, normalize: false)
@@ -102,19 +101,19 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     it "preserves number of faces from original geometry" do
       subject.flatten!
       expect(subject.faces.count).to eq(
-        (14*32*2) + # quads around the sphere
-        (2*32) # triangles at the poles
+        (14 * 32 * 2) + # quads around the sphere
+        (2 * 32) # triangles at the poles
       )
     end
 
     it "preserves number of vertices from original geometry" do
-      expect(subject.vertices.count).to eq((30*16) + 2)
+      expect(subject.vertices.count).to eq((30 * 16) + 2)
     end
 
     it "creates the right number of edge records" do
       expect(subject.edges.count).to eq(
-        ((14*32*2) + (2*32)) + # faces
-        ((30*16) + 2) + # vertices
+        ((14 * 32 * 2) + (2 * 32)) + # faces
+        ((30 * 16) + 2) + # vertices
         -2 # From the Euler characteristic: F + V − E = 2
       )
     end
