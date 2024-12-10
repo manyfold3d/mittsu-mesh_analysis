@@ -37,21 +37,21 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect(edge.ccw_right).to eq 8
   end
 
-  it "can return the other vertex index" do
+  it "can return the other vertex index" do # rubocop:todo RSpec/MultipleExpectations
     expect(edge.other_vertex(1)).to eq 2
     expect(edge.other_vertex(2)).to eq 1
   end
 
   it "can reattach start to a different vertex" do
-    expect { edge.reattach_vertex!(from: 1, to: 3) }.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0)
+    expect { edge.reattach_vertex!(from: 1, to: 3) }.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0) # rubocop:todo RSpec/ChangeByZero
   end
 
   it "can reattach end to a different vertex" do
-    expect { edge.reattach_vertex!(from: 2, to: 3) }.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0)
+    expect { edge.reattach_vertex!(from: 2, to: 3) }.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0) # rubocop:todo RSpec/ChangeByZero
   end
 
   it "does not change unattached vertices" do
-    expect { edge.reattach_vertex!(from: 5, to: 3) }.to change(edge, :start).by(0).and change(edge, :finish).by(0)
+    expect { edge.reattach_vertex!(from: 5, to: 3) }.to change(edge, :start).by(0).and change(edge, :finish).by(0) # rubocop:todo RSpec/ChangeByZero
   end
 
   context "when testing for duplication with #colinear?" do
@@ -105,17 +105,17 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
       expect(edge.index).to eq 0
     end
 
-    it "swaps vertices" do
+    it "swaps vertices" do # rubocop:todo RSpec/MultipleExpectations
       expect(edge.start).to eq 1
       expect(edge.finish).to eq 2
     end
 
-    it "swaps faces" do
+    it "swaps faces" do # rubocop:todo RSpec/MultipleExpectations
       expect(edge.left).to eq 4
       expect(edge.right).to eq 3
     end
 
-    it "rotates wings" do
+    it "rotates wings" do # rubocop:todo RSpec/MultipleExpectations
       expect(edge.cw_left).to eq 7
       expect(edge.ccw_left).to eq 8
       expect(edge.cw_right).to eq 5
@@ -126,7 +126,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   context "when normalizing an edge start is lower than finish" do
     let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8).normalize }
 
-    it "does not swap anything" do
+    it "does not swap anything" do # rubocop:todo RSpec/MultipleExpectations, RSpec/ExampleLength:
       expect(edge.index).to eq 0
       expect(edge.start).to eq 1
       expect(edge.finish).to eq 2
