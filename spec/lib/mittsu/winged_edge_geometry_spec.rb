@@ -1,32 +1,32 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
-  subject { described_class.new }
+  subject(:geometry) { described_class.new }
 
   context "with existing geometry loaded in" do
     let(:plane) { Mittsu::PlaneGeometry.new(1, 1, 1, 1) }
 
     before do
-      subject.from_geometry(plane, normalize: false)
+      geometry.from_geometry(plane, normalize: false)
     end
 
     it "preserves number of faces from original geometry" do
-      subject.flatten!
-      expect(subject.faces.count).to eq 2
+      geometry.flatten!
+      expect(geometry.faces.count).to eq 2
     end
 
     it "preserves number of vertices from original geometry" do
-      expect(subject.vertices.count).to eq 4
+      expect(geometry.vertices.count).to eq 4
     end
 
     it "creates the right number of edge records" do
-      expect(subject.edges.count).to eq 5
+      expect(geometry.edges.count).to eq 5
     end
 
     context "when inspecting diagonal edge" do
       # These are the joined opposite corner vertices in the PlaneGeometry
-      let(:edge) { subject.between(1, 2) }
+      let(:edge) { geometry.between(1, 2) }
 
       it "calculates edge lengths" do
-        expect(subject.edge_length(edge.index)).to be_within(0.1).of(1.414)
+        expect(geometry.edge_length(edge.index)).to be_within(0.1).of(1.414)
       end
 
       it "references left face" do
@@ -54,33 +54,33 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
 
       it "has a valid cw left loop" do
-        e1 = subject.edge(edge.cw_left)
+        e1 = geometry.edge(edge.cw_left)
         expect(e1.left).to eq edge.left
-        e2 = subject.edge(e1.cw_left)
+        e2 = geometry.edge(e1.cw_left)
         expect(e2.left).to eq edge.left
         expect(e2.cw_left).to eq edge.index
       end
 
       it "has a valid ccw left loop" do
-        e1 = subject.edge(edge.ccw_left)
+        e1 = geometry.edge(edge.ccw_left)
         expect(e1.left).to eq edge.left
-        e2 = subject.edge(e1.ccw_left)
+        e2 = geometry.edge(e1.ccw_left)
         expect(e2.left).to eq edge.left
         expect(e2.ccw_left).to eq edge.index
       end
 
       it "has a valid cw right loop" do
-        e1 = subject.edge(edge.cw_right)
+        e1 = geometry.edge(edge.cw_right)
         expect(e1.left).to eq edge.right
-        e2 = subject.edge(e1.cw_left)
+        e2 = geometry.edge(e1.cw_left)
         expect(e2.left).to eq edge.right
         expect(e2.cw_left).to eq edge.index
       end
 
       it "has a valid ccw right loop" do
-        e1 = subject.edge(edge.ccw_right)
+        e1 = geometry.edge(edge.ccw_right)
         expect(e1.left).to eq edge.right
-        e2 = subject.edge(e1.ccw_left)
+        e2 = geometry.edge(e1.ccw_left)
         expect(e2.left).to eq edge.right
         expect(e2.ccw_left).to eq edge.index
       end
@@ -95,23 +95,23 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     }
 
     before do
-      subject.from_geometry(sphere)
+      geometry.from_geometry(sphere)
     end
 
     it "preserves number of faces from original geometry" do
-      subject.flatten!
-      expect(subject.faces.count).to eq(
+      geometry.flatten!
+      expect(geometry.faces.count).to eq(
         (14 * 32 * 2) + # quads around the sphere
         (2 * 32) # triangles at the poles
       )
     end
 
     it "preserves number of vertices from original geometry" do
-      expect(subject.vertices.count).to eq((30 * 16) + 2)
+      expect(geometry.vertices.count).to eq((30 * 16) + 2)
     end
 
     it "creates the right number of edge records" do
-      expect(subject.edges.count).to eq(
+      expect(geometry.edges.count).to eq(
         ((14 * 32 * 2) + (2 * 32)) + # faces
         ((30 * 16) + 2) + # vertices
         -2 # From the Euler characteristic: F + V − E = 2
@@ -119,7 +119,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
     end
 
     it "checks mesh integrity" do
-      expect(subject).to be_manifold
+      expect(geometry).to be_manifold
     end
   end
 end
