@@ -25,6 +25,10 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       # These are the joined opposite corner vertices in the PlaneGeometry
       let(:edge) { geometry.between(1, 2) }
 
+      it "calculates curvature" do
+        expect(geometry.edge_curvature(edge.index)).to eq 0
+      end
+
       it "calculates edge lengths" do
         expect(geometry.edge_length(edge.index)).to be_within(0.1).of(1.414)
       end
