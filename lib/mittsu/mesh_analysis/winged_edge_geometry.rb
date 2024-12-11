@@ -51,8 +51,13 @@ module Mittsu::MeshAnalysis
       flatten!
     end
 
+    def collapse_cost(index)
+      edge_length(index) || 100
+    end
+
     def edge_length(index)
       e0 = edge(index)
+      return nil if e0.nil?
       @vertices[e0.start].distance_to(@vertices[e0.finish])
     end
 
