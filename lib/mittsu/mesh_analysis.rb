@@ -5,6 +5,7 @@ require "mittsu/mesh_analysis/analysis"
 require "mittsu/mesh_analysis/winged_edge_geometry"
 require "mittsu/mesh_analysis/modifiers/decimator"
 require "mittsu/mesh_analysis/vertex_split"
+require "mittsu/mesh_analysis/progressive_mesh"
 
 module Mittsu
   class Object3D
