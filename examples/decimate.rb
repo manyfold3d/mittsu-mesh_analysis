@@ -72,8 +72,11 @@ renderer.window.run do
   # Decimate by 0.1%
   target = (target * 0.995).floor
   exit if target == 0
-  new_geometry = decimator.decimate(target)
+  new_geometry, vertex_splits = decimator.decimate(target, vertex_splits: true)
   puts "f: #{new_geometry.faces.count}, v: #{new_geometry.vertices.count}"
+  vertex_splits.each do |v|
+    puts " - vsplit: #{v.vertex}, l: #{v.left}, r: #{v.right}, d: #{v.displacement.elements.inspect}"
+  end
 
   # Forcibly replace the geometry.
   # There might be a better way to do
