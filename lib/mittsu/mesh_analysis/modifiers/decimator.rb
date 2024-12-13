@@ -11,7 +11,7 @@ class Mittsu::MeshAnalysis::Decimator
     loop do
       break if @geometry.faces.count <= target_face_count
       edge = edge_collapses.shift
-      splits << @geometry.collapse(edge[:edge_index])
+      splits.unshift @geometry.collapse(edge[:edge_index])
     end
     # Return vertex splits if requested
     if vertex_splits
