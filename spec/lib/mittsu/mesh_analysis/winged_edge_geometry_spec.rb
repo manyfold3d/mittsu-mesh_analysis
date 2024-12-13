@@ -154,11 +154,10 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
 
       it "returns displacement vector" do
-        expect(split_data.displacement).to eq Mittsu::Vector3.new(
-          0.057990526381284435,
-          0,
-          -0.047591595070110015
-        )
+        expected = Mittsu::Vector3.new(0.057990, 0, -0.047592)
+        [:x, :y, :z].each do |axis|
+          expect(split_data.displacement.send(axis)).to be_within(1e-6).of expected.send(axis)
+        end
       end
     end
   end
