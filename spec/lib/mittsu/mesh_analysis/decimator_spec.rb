@@ -32,5 +32,10 @@ RSpec.describe Mittsu::MeshAnalysis::Decimator do
       _geometry, splits = result
       expect(splits[0]).to be_a Mittsu::MeshAnalysis::VertexSplit
     end
+
+    it "orders splits correctly - first displacement should be larger than the last one" do
+      _geometry, splits = result
+      expect(splits.first.displacement.length).to be > splits.last.displacement.length
+    end
   end
 end
