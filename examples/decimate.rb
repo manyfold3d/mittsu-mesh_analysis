@@ -71,7 +71,7 @@ target = geometry.faces.count
 renderer.window.run do
   # Decimate by 0.1%
   target = (target * 0.995).floor
-  exit if target == 0
+  exit if target <= 500
   new_geometry, vertex_splits = decimator.decimate(target, vertex_splits: true)
   puts "f: #{new_geometry.faces.count}, v: #{new_geometry.vertices.count}"
   vertex_splits.each do |v|
