@@ -129,6 +129,9 @@ module Mittsu::MeshAnalysis
       e0 = edge(index)
       return if e0.nil?
 
+      # Create vertex split record
+      split = VertexSplit.new
+
       # Move vertices to new position
       new_position = Mittsu::Vector3.new(
         (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
@@ -182,7 +185,7 @@ module Mittsu::MeshAnalysis
       # Prepare for rendering
       flatten! if flatten
       # Return split parameters required to invert operation
-      # [vertex, left_vertex, right_vertex, displacement]
+      split
     end
 
     private

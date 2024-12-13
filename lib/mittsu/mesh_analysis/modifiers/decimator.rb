@@ -4,15 +4,21 @@ class Mittsu::MeshAnalysis::Decimator
     @geometry.from_geometry(geometry)
   end
 
-  def decimate(target_face_count)
+  def decimate(target_face_count, vertex_splits: false)
     @geometry.flatten!
     edge_collapses = edge_collapse_costs.sort_by { |x| x[:cost] }
+    splits = []
     loop do
       break if @geometry.faces.count <= target_face_count
       edge = edge_collapses.shift
-      @geometry.collapse(edge[:edge_index])
+      splits << @geometry.collapse(edge[:edge_index])
     end
-    @geometry
+    # Return vertex splits if requested
+    if vertex_splits
+      [@geometry, splits]
+    else
+      @geometry
+    end
   end
 
   def edge_collapse_costs
