@@ -122,4 +122,44 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       expect(geometry).to be_manifold
     end
   end
+
+  context "when collapsing edges" do
+    let(:sphere) {
+      s = Mittsu::SphereGeometry.new(2.0, 32, 16)
+      s.merge_vertices
+      s
+    }
+
+    before do
+      geometry.from_geometry(sphere)
+    end
+
+    it "removes two faces when collapsing a single edge" do
+      expect { geometry.collapse(100) }.to change { geometry.faces.count }.by(-2)
+    end
+
+    context "when inspecting vertex split data" do
+      let(:split_data) { geometry.collapse(100) }
+
+      it "returns vertex index that needs splitting" do
+        expect(split_data.vertex).to eq 44
+      end
+
+      it "returns left vertex index" do
+        expect(split_data.left).to eq 12
+      end
+
+      it "returns right vertex index" do
+        expect(split_data.right).to eq 77
+      end
+
+      it "returns displacement vector" do
+        expect(split_data.displacement).to eq Mittsu::Vector3.new(
+          0.057990526381284435,
+          0,
+          -0.047591595070110015
+        )
+      end
+    end
+  end
 end

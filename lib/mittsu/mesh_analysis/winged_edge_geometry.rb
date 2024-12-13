@@ -130,22 +130,19 @@ module Mittsu::MeshAnalysis
       return if e0.nil?
 
       # Create vertex split record
-      split = VertexSplit.new
+      split = VertexSplit.new(vertex: e0.start)
 
-      # Move vertices to new position
-      new_position = Mittsu::Vector3.new(
-        (@vertices[e0.start].x + @vertices[e0.finish].x) / 2,
-        (@vertices[e0.start].y + @vertices[e0.finish].y) / 2,
-        (@vertices[e0.start].z + @vertices[e0.finish].z) / 2
-      )
-      # TODO: Calculate displacement vector
-      # displacement =
-      @vertices[e0.start] = new_position
+      # Calculate displacement vector and move old vertex
+      split.displacement = Mittsu::Vector3.new
+      split.displacement.sub_vectors(@vertices[e0.finish], @vertices[e0.start])
+      split.displacement.divide_scalar(2)
+      @vertices[e0.start].add(split.displacement)
 
       # Collapse left face
       cw_left = @edges[e0.cw_left]
       ccw_left = @edges[e0.ccw_left]
       if cw_left && ccw_left
+        split.left = cw_left.other_vertex(e0.start)
         face = cw_left.stitch!(ccw_left)
         @edges[cw_left.index] = cw_left
         @face_indices[face] = {face: face, edge: cw_left.index} if face
@@ -155,6 +152,7 @@ module Mittsu::MeshAnalysis
       cw_right = @edges[e0.cw_right]
       ccw_right = @edges[e0.ccw_right]
       if cw_right && ccw_right
+        split.right = ccw_right.other_vertex(e0.start)
         face = ccw_right.stitch!(cw_right)
         @edges[ccw_right.index] = ccw_right
         @face_indices[face] = {face: face, edge: ccw_right.index} if face
