@@ -23,25 +23,25 @@ module Mittsu::MeshAnalysis
         e3_new, e3 = add_edge(v1: face.c, v2: face.a, face: index)
         # Set wing data
         if e1_new
-          @edges[e1].cw_left = e3
-          @edges[e1].ccw_left = e2
+          @edges[e1].start_left = e3
+          @edges[e1].finish_left = e2
         else
-          @edges[e1].cw_right = e3
-          @edges[e1].ccw_right = e2
+          @edges[e1].start_right = e3
+          @edges[e1].finish_right = e2
         end
         if e2_new
-          @edges[e2].cw_left = e1
-          @edges[e2].ccw_left = e3
+          @edges[e2].start_left = e1
+          @edges[e2].finish_left = e3
         else
-          @edges[e2].cw_right = e1
-          @edges[e2].ccw_right = e3
+          @edges[e2].start_right = e1
+          @edges[e2].finish_right = e3
         end
         if e3_new
-          @edges[e3].cw_left = e2
-          @edges[e3].ccw_left = e1
+          @edges[e3].start_left = e2
+          @edges[e3].finish_left = e1
         else
-          @edges[e3].cw_right = e2
-          @edges[e3].ccw_right = e1
+          @edges[e3].start_right = e2
+          @edges[e3].finish_right = e1
         end
         # Store face->edge reference
         @face_indices[index] = {face: index, edge: e1}
@@ -67,9 +67,9 @@ module Mittsu::MeshAnalysis
         e0 = edge(face[:edge])
         next if e0.nil?
         if e0.left == face[:face]
-          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.ccw_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.ccw_left)&.other_vertex(e0.finish)
+          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.finish_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.finish_left)&.other_vertex(e0.finish)
         elsif e0.right == face[:face]
-          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.ccw_right)&.other_vertex(e0.start)) if e0.finish && e0.start && edge(e0.ccw_right)&.other_vertex(e0.start)
+          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.finish_right)&.other_vertex(e0.start)) if e0.finish && e0.start && edge(e0.finish_right)&.other_vertex(e0.start)
         end
       end
       @faces.compact!
@@ -102,10 +102,10 @@ module Mittsu::MeshAnalysis
           !@vertices[e.finish].nil? &&
           !@face_indices[e.left].nil? &&
           !@face_indices[e.right].nil? &&
-          !@edges[e.cw_left].nil? &&
-          !@edges[e.ccw_left].nil? &&
-          !@edges[e.cw_right].nil? &&
-          !@edges[e.ccw_right].nil?
+          !@edges[e.start_left].nil? &&
+          !@edges[e.finish_left].nil? &&
+          !@edges[e.start_right].nil? &&
+          !@edges[e.finish_right].nil?
       end
     end
 
@@ -139,44 +139,44 @@ module Mittsu::MeshAnalysis
       @vertices[e0.start].add(split.displacement)
 
       # Collapse left face
-      cw_left = @edges[e0.cw_left]
-      ccw_left = @edges[e0.ccw_left]
-      if cw_left && ccw_left
-        split.left = cw_left.other_vertex(e0.start)
-        face = cw_left.stitch!(ccw_left)
-        @edges[cw_left.index] = cw_left
-        @face_indices[face] = {face: face, edge: cw_left.index} if face
+      start_left = @edges[e0.start_left]
+      finish_left = @edges[e0.finish_left]
+      if start_left && finish_left
+        split.left = start_left.other_vertex(e0.start)
+        face = start_left.stitch!(finish_left)
+        @edges[start_left.index] = start_left
+        @face_indices[face] = {face: face, edge: start_left.index} if face
       end
 
       # Collapse right face
-      cw_right = @edges[e0.cw_right]
-      ccw_right = @edges[e0.ccw_right]
-      if cw_right && ccw_right
-        split.right = ccw_right.other_vertex(e0.start)
-        face = ccw_right.stitch!(cw_right)
-        @edges[ccw_right.index] = ccw_right
-        @face_indices[face] = {face: face, edge: ccw_right.index} if face
+      start_right = @edges[e0.start_right]
+      finish_right = @edges[e0.finish_right]
+      if start_right && finish_right
+        split.right = finish_right.other_vertex(e0.start)
+        face = finish_right.stitch!(start_right)
+        @edges[finish_right.index] = finish_right
+        @face_indices[face] = {face: face, edge: finish_right.index} if face
       end
 
       # Remove two faces, one vertex, and three edges
       @face_indices[e0.left] = nil if e0.left
       @face_indices[e0.right] = nil if e0.right
       @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
-      @edges[e0.ccw_left] = nil
-      @edges[e0.cw_right] = nil
+      @edges[e0.finish_left] = nil
+      @edges[e0.start_right] = nil
       @edges[e0.index] = nil
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
       @face_indices.each do |f|
         next if f.nil?
-        f[:edge] = cw_left&.index if f[:edge] == ccw_left&.index
-        f[:edge] = ccw_right&.index if f[:edge] == cw_right&.index
+        f[:edge] = start_left&.index if f[:edge] == finish_left&.index
+        f[:edge] = finish_right&.index if f[:edge] == start_right&.index
       end
       @edges.each do |e|
         next if e.nil?
-        e.reattach_edge!(from: ccw_left.index, to: cw_left.index) if ccw_left && cw_left
-        e.reattach_edge!(from: cw_right.index, to: ccw_right.index) if ccw_right && cw_right
+        e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
+        e.reattach_edge!(from: start_right.index, to: finish_right.index) if finish_right && start_right
         e.reattach_vertex!(from: e0.finish, to: e0.start) if e0
       end
 
