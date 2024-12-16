@@ -161,4 +161,45 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
     end
   end
+
+  context "when reordering vertices" do
+    let(:sphere) {
+      s = Mittsu::SphereGeometry.new(2.0, 32, 16)
+      s.merge_vertices
+      s
+    }
+
+    before do
+      geometry.from_geometry(sphere)
+    end
+
+    it "can reorder vertices by floating them to end of the array" do
+      original = geometry.vertices[10].clone
+      expect { geometry.move_vertex_to_end(10) }.to change { geometry.vertices.last }.to(original)
+    end
+
+    it "keeps number of vertices the same" do
+      expect { geometry.move_vertex_to_end(10) }.not_to change { geometry.vertices.count }
+    end
+
+    it "updates vertex references in edges for this vertex" do
+      expect { geometry.move_vertex_to_end(0) }.to change { geometry.edges.first.start }.from(0).to(481)
+    end
+
+    it "updates all other vertex references" do
+      expect { geometry.move_vertex_to_end(0) }.to change { geometry.edges.first.finish }.from(1).to(0)
+    end
+
+    it "leaves vertex references lower than passed index intact" do
+      expect { geometry.move_vertex_to_end(3) }.not_to change { geometry.edges.first.finish }
+    end
+
+    it "does not change anything if this is already the last vertex" do
+      expect { geometry.move_vertex_to_end(481) }.not_to change(geometry, :edges)
+    end
+
+    it "fails safe if index is too high" do
+      expect { geometry.move_vertex_to_end(999) }.not_to raise_error
+    end
+  end
 end

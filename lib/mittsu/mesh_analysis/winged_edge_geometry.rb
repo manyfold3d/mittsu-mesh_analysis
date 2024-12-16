@@ -172,6 +172,26 @@ module Mittsu::MeshAnalysis
       split
     end
 
+    def move_vertex_to_end(index)
+      return if index >= @vertices.count
+      # Add move vertex to end of array
+      @vertices.push @vertices.slice!(index)
+      new_index = @vertices.count - 1
+      # Update all vertex references
+      @edges.each do |edge|
+        if edge.start == index
+          edge.start = new_index
+        elsif edge.start > index
+          edge.start = edge.start - 1
+        end
+        if edge.finish == index
+          edge.finish = new_index
+        elsif edge.finish > index
+          edge.finish = edge.finish - 1
+        end
+      end
+    end
+
     private
 
     def find_edge_indexes(from:, to:)
