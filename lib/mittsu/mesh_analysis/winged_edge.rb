@@ -1,8 +1,8 @@
 module Mittsu::MeshAnalysis
   class WingedEdge
-    attr_accessor :start, :finish, :left, :right, :cw_left, :ccw_left, :cw_right, :ccw_right, :index
+    attr_accessor :start, :finish, :left, :right, :start_left, :finish_left, :start_right, :finish_right, :index
 
-    def initialize(index:, start:, finish:, left: nil, right: nil, cw_left: nil, ccw_left: nil, cw_right: nil, ccw_right: nil)
+    def initialize(index:, start:, finish:, left: nil, right: nil, start_left: nil, finish_left: nil, start_right: nil, finish_right: nil)
       # Index
       @index = index
       # Vertices
@@ -12,18 +12,18 @@ module Mittsu::MeshAnalysis
       @left = left
       @right = right
       # Edges
-      @cw_left = cw_left
-      @ccw_left = ccw_left
-      @cw_right = cw_right
-      @ccw_right = ccw_right
+      @start_left = start_left
+      @finish_left = finish_left
+      @start_right = start_right
+      @finish_right = finish_right
     end
 
     def complete?
-      @index && @start && @finish && @left && @right && @cw_left && @ccw_left && @cw_right && @ccw_right
+      @index && @start && @finish && @left && @right && @start_left && @finish_left && @start_right && @finish_right
     end
 
     def degenerate?
-      @start == @finish || @left == @right || [@index, @cw_left, @cw_right, @ccw_left, @ccw_right].uniq.count != 5
+      @start == @finish || @left == @right || [@index, @start_left, @start_right, @finish_left, @finish_right].uniq.count != 5
     end
 
     def other_vertex(index)
@@ -39,14 +39,14 @@ module Mittsu::MeshAnalysis
     end
 
     def reattach_edge!(from:, to:)
-      if @cw_left == from
-        @cw_left = to
-      elsif @ccw_left == from
-        @ccw_left = to
-      elsif @cw_right == from
-        @cw_right = to
-      elsif @ccw_right == from
-        @ccw_right = to
+      if @start_left == from
+        @start_left = to
+      elsif @finish_left == from
+        @finish_left = to
+      elsif @start_right == from
+        @start_right = to
+      elsif @finish_right == from
+        @finish_right = to
       end
     end
 
@@ -84,10 +84,10 @@ module Mittsu::MeshAnalysis
         finish: @start,
         left: @right,
         right: @left,
-        cw_left: @cw_right,
-        ccw_left: @ccw_right,
-        cw_right: @cw_left,
-        ccw_right: @ccw_left
+        start_left: @start_right,
+        finish_left: @finish_right,
+        start_right: @start_left,
+        finish_right: @finish_left
       )
     end
 
@@ -108,13 +108,13 @@ module Mittsu::MeshAnalysis
       edge = edge.flip unless same_direction?(edge)
       # Stitch left side of other edge if our left face is the shared one, or vice versa
       if face == @left
-        @cw_left = edge.cw_left
-        @ccw_left = edge.ccw_left
+        @start_left = edge.start_left
+        @finish_left = edge.finish_left
         @left = edge.left
         @left
       else
-        @cw_right = edge.cw_right
-        @ccw_right = edge.ccw_right
+        @start_right = edge.start_right
+        @finish_right = edge.finish_right
         @right = edge.right
         @right
       end

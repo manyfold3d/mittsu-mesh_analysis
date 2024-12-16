@@ -1,5 +1,5 @@
 RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
-  let(:edge) { described_class.new index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8 }
+  let(:edge) { described_class.new index: 0, start: 1, finish: 2, left: 3, right: 4, start_left: 5, finish_left: 6, start_right: 7, finish_right: 8 }
 
   it "has an index" do
     expect(edge.index).to eq 0
@@ -21,20 +21,20 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect(edge.right).to eq 4
   end
 
-  it "has a cw_left edge" do
-    expect(edge.cw_left).to eq 5
+  it "has a start_left edge" do
+    expect(edge.start_left).to eq 5
   end
 
-  it "has a ccw_left edge" do
-    expect(edge.ccw_left).to eq 6
+  it "has a finish_left edge" do
+    expect(edge.finish_left).to eq 6
   end
 
-  it "has a cw_right edge" do
-    expect(edge.cw_right).to eq 7
+  it "has a start_right edge" do
+    expect(edge.start_right).to eq 7
   end
 
-  it "has a ccw_right edge" do
-    expect(edge.ccw_right).to eq 8
+  it "has a finish_right edge" do
+    expect(edge.finish_right).to eq 8
   end
 
   it "can return the other vertex index" do # rubocop:todo RSpec/MultipleExpectations
@@ -99,7 +99,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
   end
 
   context "when normalizing an edge with start higher than finish" do
-    let(:edge) { described_class.new(index: 0, start: 2, finish: 1, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8).normalize }
+    let(:edge) { described_class.new(index: 0, start: 2, finish: 1, left: 3, right: 4, start_left: 5, finish_left: 6, start_right: 7, finish_right: 8).normalize }
 
     it "preserves index" do
       expect(edge.index).to eq 0
@@ -116,15 +116,15 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     end
 
     it "rotates wings" do # rubocop:todo RSpec/MultipleExpectations
-      expect(edge.cw_left).to eq 7
-      expect(edge.ccw_left).to eq 8
-      expect(edge.cw_right).to eq 5
-      expect(edge.ccw_right).to eq 6
+      expect(edge.start_left).to eq 7
+      expect(edge.finish_left).to eq 8
+      expect(edge.start_right).to eq 5
+      expect(edge.finish_right).to eq 6
     end
   end
 
   context "when normalizing an edge start is lower than finish" do
-    let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, cw_left: 5, ccw_left: 6, cw_right: 7, ccw_right: 8).normalize }
+    let(:edge) { described_class.new(index: 0, start: 1, finish: 2, left: 3, right: 4, start_left: 5, finish_left: 6, start_right: 7, finish_right: 8).normalize }
 
     it "does not swap anything" do # rubocop:todo RSpec/MultipleExpectations, RSpec/ExampleLength:
       expect(edge.index).to eq 0
@@ -132,10 +132,10 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
       expect(edge.finish).to eq 2
       expect(edge.left).to eq 3
       expect(edge.right).to eq 4
-      expect(edge.cw_left).to eq 5
-      expect(edge.ccw_left).to eq 6
-      expect(edge.cw_right).to eq 7
-      expect(edge.ccw_right).to eq 8
+      expect(edge.start_left).to eq 5
+      expect(edge.finish_left).to eq 6
+      expect(edge.start_right).to eq 7
+      expect(edge.finish_right).to eq 8
     end
   end
 

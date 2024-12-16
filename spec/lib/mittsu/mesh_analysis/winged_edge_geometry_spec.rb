@@ -38,51 +38,51 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
 
       it "references clockwise edge on left side" do
-        expect(edge.cw_left).to eq 0
+        expect(edge.start_left).to eq 0
       end
 
       it "references counter-clockwise edge on left side" do
-        expect(edge.ccw_left).to eq 2
+        expect(edge.finish_left).to eq 2
       end
 
       it "references clockwise edge on right side" do
-        expect(edge.cw_right).to eq 4
+        expect(edge.start_right).to eq 4
       end
 
       it "references counter-clockwise edge on right side" do
-        expect(edge.ccw_right).to eq 3
+        expect(edge.finish_right).to eq 3
       end
 
       it "has a valid cw left loop" do # rubocop:todo RSpec/MultipleExpectations
-        e1 = geometry.edge(edge.cw_left)
+        e1 = geometry.edge(edge.start_left)
         expect(e1.left).to eq edge.left
-        e2 = geometry.edge(e1.cw_left)
+        e2 = geometry.edge(e1.start_left)
         expect(e2.left).to eq edge.left
-        expect(e2.cw_left).to eq edge.index
+        expect(e2.start_left).to eq edge.index
       end
 
       it "has a valid ccw left loop" do # rubocop:todo RSpec/MultipleExpectations
-        e1 = geometry.edge(edge.ccw_left)
+        e1 = geometry.edge(edge.finish_left)
         expect(e1.left).to eq edge.left
-        e2 = geometry.edge(e1.ccw_left)
+        e2 = geometry.edge(e1.finish_left)
         expect(e2.left).to eq edge.left
-        expect(e2.ccw_left).to eq edge.index
+        expect(e2.finish_left).to eq edge.index
       end
 
       it "has a valid cw right loop" do # rubocop:todo RSpec/MultipleExpectations
-        e1 = geometry.edge(edge.cw_right)
+        e1 = geometry.edge(edge.start_right)
         expect(e1.left).to eq edge.right
-        e2 = geometry.edge(e1.cw_left)
+        e2 = geometry.edge(e1.start_left)
         expect(e2.left).to eq edge.right
-        expect(e2.cw_left).to eq edge.index
+        expect(e2.start_left).to eq edge.index
       end
 
       it "has a valid ccw right loop" do # rubocop:todo RSpec/MultipleExpectations
-        e1 = geometry.edge(edge.ccw_right)
+        e1 = geometry.edge(edge.finish_right)
         expect(e1.left).to eq edge.right
-        e2 = geometry.edge(e1.ccw_left)
+        e2 = geometry.edge(e1.finish_left)
         expect(e2.left).to eq edge.right
-        expect(e2.ccw_left).to eq edge.index
+        expect(e2.finish_left).to eq edge.index
       end
     end
   end
