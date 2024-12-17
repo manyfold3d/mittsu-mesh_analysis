@@ -131,13 +131,12 @@ module Mittsu::MeshAnalysis
       end
 
       # Create vertex split record
-      split = VertexSplit.new(vertex: e0.start)
-
-      # Calculate displacement vector and move old vertex
-      split.displacement = Mittsu::Vector3.new
-      split.displacement.sub_vectors(@vertices[e0.finish], @vertices[e0.start])
-      split.displacement.divide_scalar(2)
-      @vertices[e0.start].add(split.displacement)
+      split = VertexSplit.new(
+        vertex: e0.start,
+        left: edge(e0.start_left)&.other_vertex(e0.start),
+        right: edge(e0.start_right)&.other_vertex(e0.start),
+        displacement: Mittsu::Vector3.new.sub_vectors(@vertices[e0.finish], @vertices[e0.start]).divide_scalar(2)
+      )
 
       # Collapse left face
       start_left = @edges[e0.start_left]
@@ -173,6 +172,8 @@ module Mittsu::MeshAnalysis
         @edges[e.index] = r if r
       end
 
+      # Move vertex
+      @vertices[e0.start] = Mittsu::Vector3.new.add_vectors(@vertices[e0.start], split.displacement)
       # Prepare for rendering
       flatten! if flatten
       # Return split parameters required to invert operation
