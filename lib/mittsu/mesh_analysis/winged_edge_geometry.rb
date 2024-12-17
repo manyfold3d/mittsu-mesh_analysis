@@ -6,7 +6,6 @@ module Mittsu::MeshAnalysis
 
     def initialize
       super
-      @face_indices = []
       @edges = []
     end
 
@@ -43,8 +42,6 @@ module Mittsu::MeshAnalysis
           @edges[e3].start_right = e2
           @edges[e3].finish_right = e1
         end
-        # Store face->edge reference
-        @face_indices[index] = {face: index, edge: e1}
       end
       normalize! if normalize
       # Calculate renderable mesh after import
@@ -62,14 +59,14 @@ module Mittsu::MeshAnalysis
     end
 
     def flatten!
-      @faces = @face_indices.map do |face|
-        next if face.nil?
-        e0 = edge(face[:edge])
+      @faces = []
+      @edges.each do |e0|
         next if e0.nil?
-        if e0.left == face[:face]
-          Mittsu::Face3.new(e0.start, e0.finish, edge(e0.finish_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.finish_left)&.other_vertex(e0.finish)
-        elsif e0.right == face[:face]
-          Mittsu::Face3.new(e0.finish, e0.start, edge(e0.finish_right)&.other_vertex(e0.start)) if e0.finish && e0.start && edge(e0.finish_right)&.other_vertex(e0.start)
+        if e0.left && @faces[e0.left].nil?
+          @faces[e0.left] = Mittsu::Face3.new(e0.start, e0.finish, edge(e0.finish_left)&.other_vertex(e0.finish)) if e0.start && e0.finish && edge(e0.finish_left)&.other_vertex(e0.finish)
+        end
+        if e0.right && @faces[e0.right].nil?
+          @faces[e0.right] = Mittsu::Face3.new(e0.finish, e0.start, edge(e0.finish_right)&.other_vertex(e0.start)) if e0.finish && e0.start && edge(e0.finish_right)&.other_vertex(e0.start)
         end
       end
       @faces.compact!
@@ -100,8 +97,6 @@ module Mittsu::MeshAnalysis
           indexes_between(e.start, e.finish).count <= 1 &&
           !@vertices[e.start].nil? &&
           !@vertices[e.finish].nil? &&
-          !@face_indices[e.left].nil? &&
-          !@face_indices[e.right].nil? &&
           !@edges[e.start_left].nil? &&
           !@edges[e.finish_left].nil? &&
           !@edges[e.start_right].nil? &&
@@ -143,9 +138,8 @@ module Mittsu::MeshAnalysis
       finish_left = @edges[e0.finish_left]
       if start_left && finish_left
         split.left = start_left.other_vertex(e0.start)
-        face = start_left.stitch!(finish_left)
+        start_left.stitch!(finish_left)
         @edges[start_left.index] = start_left
-        @face_indices[face] = {face: face, edge: start_left.index} if face
       end
 
       # Collapse right face
@@ -153,14 +147,11 @@ module Mittsu::MeshAnalysis
       finish_right = @edges[e0.finish_right]
       if start_right && finish_right
         split.right = finish_right.other_vertex(e0.start)
-        face = finish_right.stitch!(start_right)
+        finish_right.stitch!(start_right)
         @edges[finish_right.index] = finish_right
-        @face_indices[face] = {face: face, edge: finish_right.index} if face
       end
 
-      # Remove two faces, one vertex, and three edges
-      @face_indices[e0.left] = nil if e0.left
-      @face_indices[e0.right] = nil if e0.right
+      # Remove one vertex, and three edges
       @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
       @edges[e0.finish_left] = nil
       @edges[e0.start_right] = nil
@@ -168,11 +159,6 @@ module Mittsu::MeshAnalysis
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
-      @face_indices.each do |f|
-        next if f.nil?
-        f[:edge] = start_left&.index if f[:edge] == finish_left&.index
-        f[:edge] = finish_right&.index if f[:edge] == start_right&.index
-      end
       @edges.each do |e|
         next if e.nil?
         e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
