@@ -30,12 +30,16 @@ module Mittsu::MeshAnalysis
       (@start == index) ? @finish : @start
     end
 
-    def reattach_vertex!(from:, to:)
+    def reattach_vertex(from:, to:)
+      out = nil
       if @start == from
-        @start = to
+        out = clone
+        out.start = to
       elsif @finish == from
-        @finish = to
+        out = clone
+        out.finish = to
       end
+      (out.nil? || out.degenerate?) ? nil : out
     end
 
     def reattach_edge!(from:, to:)

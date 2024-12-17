@@ -163,7 +163,8 @@ module Mittsu::MeshAnalysis
         next if e.nil?
         e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
         e.reattach_edge!(from: start_right.index, to: finish_right.index) if finish_right && start_right
-        e.reattach_vertex!(from: e0.finish, to: e0.start) if e0
+        r = e.reattach_vertex(from: e0.finish, to: e0.start)
+        @edges[e.index] = r if r
       end
 
       # Prepare for rendering

@@ -42,16 +42,21 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect(edge.other_vertex(2)).to eq 1
   end
 
-  it "can reattach start to a different vertex" do
-    expect { edge.reattach_vertex!(from: 1, to: 3) }.to change(edge, :start).from(1).to(3).and change(edge, :finish).by(0) # rubocop:todo RSpec/ChangeByZero
+  it "can reattach start to a different vertex" do # rubocop:disable RSpec/MultipleExpectations
+    new_edge = edge.reattach_vertex(from: 1, to: 3)
+    expect(new_edge.start).to eq 3
+    expect(new_edge.finish).to eq 2
   end
 
-  it "can reattach end to a different vertex" do
-    expect { edge.reattach_vertex!(from: 2, to: 3) }.to change(edge, :finish).from(2).to(3).and change(edge, :start).by(0) # rubocop:todo RSpec/ChangeByZero
+  it "can reattach end to a different vertex" do # rubocop:disable RSpec/MultipleExpectations
+    new_edge = edge.reattach_vertex(from: 2, to: 3)
+    expect(new_edge.start).to eq 1
+    expect(new_edge.finish).to eq 3
   end
 
   it "does not change unattached vertices" do
-    expect { edge.reattach_vertex!(from: 5, to: 3) }.to change(edge, :start).by(0).and change(edge, :finish).by(0) # rubocop:todo RSpec/ChangeByZero
+    new_edge = edge.reattach_vertex(from: 5, to: 3)
+    expect(new_edge).to be_nil
   end
 
   context "when testing for duplication with #colinear?" do
