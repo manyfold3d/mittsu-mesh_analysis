@@ -138,7 +138,7 @@ module Mittsu::MeshAnalysis
       finish_left = @edges[e0.finish_left]
       if start_left && finish_left
         split.left = start_left.other_vertex(e0.start)
-        start_left.stitch!(finish_left)
+        start_left = start_left.stitch(finish_left)
         @edges[start_left.index] = start_left
       end
 
@@ -147,7 +147,7 @@ module Mittsu::MeshAnalysis
       finish_right = @edges[e0.finish_right]
       if start_right && finish_right
         split.right = finish_right.other_vertex(e0.start)
-        finish_right.stitch!(start_right)
+        finish_right = finish_right.stitch(start_right)
         @edges[finish_right.index] = finish_right
       end
 
