@@ -174,12 +174,13 @@ module Mittsu::MeshAnalysis
     end
 
     def move_vertex_to_end(index)
-      return if index >= @vertices.count
+      return unless @vertices[index]
       # Add move vertex to end of array
       @vertices.push @vertices.slice!(index)
       new_index = @vertices.count - 1
       # Update all vertex references
       @edges.each do |edge|
+        next if edge.nil?
         if edge.start == index
           edge.start = new_index
         elsif edge.start > index
