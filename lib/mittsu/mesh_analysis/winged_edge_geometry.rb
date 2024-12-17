@@ -120,9 +120,15 @@ module Mittsu::MeshAnalysis
     # and merging everything onto the start vertex instead.
     # If the result would be degenerate in some way, the mesh is unchanged
     def collapse(index, flatten: true)
-      # find the edge
+      # Find edge, reorder vertices and reload
       e0 = edge(index)
-      return if e0.nil?
+      if e0
+        move_vertex_to_end(e0.finish)
+        e0 = edge(index)
+      else
+        # Invalid edge index
+        return nil
+      end
 
       # Create vertex split record
       split = VertexSplit.new(vertex: e0.start)
