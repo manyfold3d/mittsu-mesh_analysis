@@ -138,6 +138,11 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       expect { geometry.collapse(100) }.to change { geometry.faces.count }.by(-2)
     end
 
+    it "removes one vertex when collapsing a single edge" do
+      pending "awaiting implementation of vertex compaction"
+      expect { geometry.collapse(100) }.to change { geometry.vertices.count }.by(-1)
+    end
+
     context "when inspecting vertex split data" do
       let(:split_data) { geometry.collapse(100) }
 
