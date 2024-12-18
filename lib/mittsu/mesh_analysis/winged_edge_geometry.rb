@@ -146,25 +146,29 @@ module Mittsu::MeshAnalysis
       }
 
       # Collapse left face
-      start_left = @edges[e0.start_left]
-      finish_left = @edges[e0.finish_left]
-      if start_left && finish_left
-        split.left = start_left.other_vertex(e0.start)
-        start_left = start_left.stitch(finish_left)
-        @edges[start_left.index] = start_left
+      start = @edges[e0.start_left]
+      finish = @edges[e0.finish_left]
+      if start && finish
+        split.left = start.other_vertex(e0.start)
+        start = start.stitch(finish)
+        @edges[start.index] = start
       end
 
       # Collapse right face
-      start_right = @edges[e0.start_right]
-      finish_right = @edges[e0.finish_right]
-      if start_right && finish_right
-        split.right = finish_right.other_vertex(e0.start)
-        finish_right = finish_right.stitch(start_right)
-        @edges[finish_right.index] = finish_right
+      start = @edges[e0.start_right]
+      finish = @edges[e0.finish_right]
+      if start && finish
+        split.right = finish.other_vertex(e0.start)
+        finish = finish.stitch(start)
+        @edges[finish.index] = finish
       end
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
+      start_left = @edges[e0.start_left]
+      finish_left = @edges[e0.finish_left]
+      start_right = @edges[e0.start_right]
+      finish_right = @edges[e0.finish_right]
       @edges.each do |e|
         next if e.nil?
         e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
