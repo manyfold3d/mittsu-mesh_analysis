@@ -145,34 +145,18 @@ module Mittsu::MeshAnalysis
         e0.finish_right => nil
       }
 
-      # Collapse left face
-      start = @edges[e0.start_left]
-      finish = @edges[e0.finish_left]
-      if start && finish
-        split.left = start.other_vertex(e0.start)
-        start = start.stitch(finish)
-        @edges[start.index] = start
-      end
-
-      # Collapse right face
-      start = @edges[e0.start_right]
-      finish = @edges[e0.finish_right]
-      if start && finish
-        split.right = start.other_vertex(e0.start)
-        start = start.stitch(finish)
-        @edges[start.index] = start
-      end
+      # Collapse faces
+      stitched = collapse_face(e0, :left)
+      @edges[stitched.index] = stitched if stitched
+      stitched = collapse_face(e0, :right)
+      @edges[stitched.index] = stitched if stitched
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
-      start_left = @edges[e0.start_left]
-      finish_left = @edges[e0.finish_left]
-      start_right = @edges[e0.start_right]
-      finish_right = @edges[e0.finish_right]
       @edges.each do |e|
-        next if e.nil?
-        e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
-        e.reattach_edge!(from: finish_right.index, to: start_right.index) if finish_right && start_right
+        next if e.nil? || e.index == e0.index
+        e.reattach_edge!(from: e0.finish_left, to: e0.start_left)
+        e.reattach_edge!(from: e0.finish_right, to: e0.start_right)
         reattached = e.reattach_vertex(from: e0.finish, to: e0.start)
         @edges[reattached.index] = reattached if reattached
       end
@@ -211,6 +195,17 @@ module Mittsu::MeshAnalysis
     end
 
     private
+
+    def collapse_face(e0, face)
+      if face == :left
+        start = @edges[e0.start_left]
+        finish = @edges[e0.finish_left]
+      else
+        start = @edges[e0.start_right]
+        finish = @edges[e0.finish_right]
+      end
+      start.stitch(finish) if start && finish
+    end
 
     def find_edge_indexes(from:, to:)
       @edges.select { |e| !e.nil? && (e.start == from && e.finish == to) }.map(&:index)
