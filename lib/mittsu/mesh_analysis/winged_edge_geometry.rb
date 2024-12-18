@@ -142,7 +142,7 @@ module Mittsu::MeshAnalysis
       changeset = {
         e0.index => nil,
         e0.finish_left => nil,
-        e0.start_right => nil
+        e0.finish_right => nil
       }
 
       # Collapse left face
@@ -158,9 +158,9 @@ module Mittsu::MeshAnalysis
       start = @edges[e0.start_right]
       finish = @edges[e0.finish_right]
       if start && finish
-        split.right = finish.other_vertex(e0.start)
-        finish = finish.stitch(start)
-        @edges[finish.index] = finish
+        split.right = start.other_vertex(e0.start)
+        start = start.stitch(finish)
+        @edges[start.index] = start
       end
 
       # Reattach edges to remove old indexes
@@ -172,7 +172,7 @@ module Mittsu::MeshAnalysis
       @edges.each do |e|
         next if e.nil?
         e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
-        e.reattach_edge!(from: start_right.index, to: finish_right.index) if finish_right && start_right
+        e.reattach_edge!(from: finish_right.index, to: start_right.index) if finish_right && start_right
         reattached = e.reattach_vertex(from: e0.finish, to: e0.start)
         @edges[reattached.index] = reattached if reattached
       end

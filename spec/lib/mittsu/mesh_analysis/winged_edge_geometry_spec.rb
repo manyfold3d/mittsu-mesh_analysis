@@ -155,7 +155,7 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdgeGeometry do
       end
 
       it "returns right vertex index" do
-        expect(split_data.right).to eq 76
+        expect(split_data.right).to eq 481
       end
 
       it "returns displacement vector" do
