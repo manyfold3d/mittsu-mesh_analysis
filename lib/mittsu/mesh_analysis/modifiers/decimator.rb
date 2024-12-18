@@ -9,13 +9,13 @@ class Mittsu::MeshAnalysis::Decimator
     edge_collapses = edge_collapse_costs.sort_by { |x| x[:cost] }
     splits = []
     loop do
-      break if @geometry.faces.count <= target_face_count
+      break if @geometry.faces.count <= target_face_count || edge_collapses.empty?
       edge = edge_collapses.shift
       splits.unshift @geometry.collapse(edge[:edge_index])
     end
     # Return vertex splits if requested
     if vertex_splits
-      [@geometry, splits]
+      [@geometry, splits.compact]
     else
       @geometry
     end

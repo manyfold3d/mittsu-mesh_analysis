@@ -120,52 +120,53 @@ module Mittsu::MeshAnalysis
     # and merging everything onto the start vertex instead.
     # If the result would be degenerate in some way, the mesh is unchanged
     def collapse(index, flatten: true)
-      # find the edge
+      # Find edge, reorder vertices and reload
       e0 = edge(index)
-      return if e0.nil?
+      if e0
+        move_vertex_to_end(e0.finish)
+        e0 = edge(index)
+      else
+        # Invalid edge index
+        return nil
+      end
 
       # Create vertex split record
-      split = VertexSplit.new(vertex: e0.start)
+      split = VertexSplit.new(
+        vertex: e0.start,
+        left: edge(e0.start_left)&.other_vertex(e0.start),
+        right: edge(e0.start_right)&.other_vertex(e0.start),
+        displacement: Mittsu::Vector3.new.sub_vectors(@vertices[e0.finish], @vertices[e0.start]).divide_scalar(2)
+      )
 
-      # Calculate displacement vector and move old vertex
-      split.displacement = Mittsu::Vector3.new
-      split.displacement.sub_vectors(@vertices[e0.finish], @vertices[e0.start])
-      split.displacement.divide_scalar(2)
-      @vertices[e0.start].add(split.displacement)
+      # Create changeset to store edges that will be changed
+      changeset = {
+        e0.index => nil,
+        e0.finish_left => nil,
+        e0.finish_right => nil
+      }
 
-      # Collapse left face
-      start_left = @edges[e0.start_left]
-      finish_left = @edges[e0.finish_left]
-      if start_left && finish_left
-        split.left = start_left.other_vertex(e0.start)
-        start_left.stitch!(finish_left)
-        @edges[start_left.index] = start_left
-      end
-
-      # Collapse right face
-      start_right = @edges[e0.start_right]
-      finish_right = @edges[e0.finish_right]
-      if start_right && finish_right
-        split.right = finish_right.other_vertex(e0.start)
-        finish_right.stitch!(start_right)
-        @edges[finish_right.index] = finish_right
-      end
-
-      # Remove one vertex, and three edges
-      @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
-      @edges[e0.finish_left] = nil
-      @edges[e0.start_right] = nil
-      @edges[e0.index] = nil
+      # Collapse faces
+      stitched = collapse_face(e0, :left)
+      @edges[stitched.index] = stitched if stitched
+      stitched = collapse_face(e0, :right)
+      @edges[stitched.index] = stitched if stitched
 
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
       @edges.each do |e|
-        next if e.nil?
-        e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
-        e.reattach_edge!(from: start_right.index, to: finish_right.index) if finish_right && start_right
-        e.reattach_vertex!(from: e0.finish, to: e0.start) if e0
+        next if e.nil? || e.index == e0.index
+        @edges[e.index] =
+          e.reattach_edge(from: e0.finish_left, to: e0.start_left)
+            .reattach_edge(from: e0.finish_right, to: e0.start_right)
+            .reattach_vertex(from: e0.finish, to: e0.start)
       end
 
+      # Apply edge changes
+      changeset.each_pair { |i, e| @edges[i] = e }
+      # Move vertex
+      @vertices[e0.start] = Mittsu::Vector3.new.add_vectors(@vertices[e0.start], split.displacement)
+      # Remove old vertex
+      @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
       # Prepare for rendering
       flatten! if flatten
       # Return split parameters required to invert operation
@@ -173,12 +174,13 @@ module Mittsu::MeshAnalysis
     end
 
     def move_vertex_to_end(index)
-      return if index >= @vertices.count
+      return unless @vertices[index]
       # Add move vertex to end of array
       @vertices.push @vertices.slice!(index)
       new_index = @vertices.count - 1
       # Update all vertex references
       @edges.each do |edge|
+        next if edge.nil?
         if edge.start == index
           edge.start = new_index
         elsif edge.start > index
@@ -193,6 +195,17 @@ module Mittsu::MeshAnalysis
     end
 
     private
+
+    def collapse_face(e0, face)
+      if face == :left
+        start = @edges[e0.start_left]
+        finish = @edges[e0.finish_left]
+      else
+        start = @edges[e0.start_right]
+        finish = @edges[e0.finish_right]
+      end
+      start.stitch(finish) if start && finish
+    end
 
     def find_edge_indexes(from:, to:)
       @edges.select { |e| !e.nil? && (e.start == from && e.finish == to) }.map(&:index)

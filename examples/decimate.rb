@@ -69,9 +69,9 @@ decimator = Mittsu::MeshAnalysis::Decimator.new(geometry)
 target = geometry.faces.count
 
 renderer.window.run do
-  # Decimate by 0.1%
+  # Decimate by 0.5% per frame
   target = (target * 0.995).floor
-  exit if target <= 500
+  exit if target < 50
   new_geometry, vertex_splits = decimator.decimate(target, vertex_splits: true)
   puts "f: #{new_geometry.faces.count}, v: #{new_geometry.vertices.count}"
   vertex_splits.each do |v|
