@@ -54,9 +54,10 @@ RSpec.describe Mittsu::MeshAnalysis::WingedEdge do
     expect(new_edge.finish).to eq 3
   end
 
-  it "does not change unattached vertices" do
+  it "does not change unattached vertices" do # rubocop:disable RSpec/MultipleExpectations
     new_edge = edge.reattach_vertex(from: 5, to: 3)
-    expect(new_edge).to be_nil
+    expect(new_edge.start).to eq 1
+    expect(new_edge.finish).to eq 2
   end
 
   context "when testing for duplication with #colinear?" do

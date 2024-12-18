@@ -155,10 +155,10 @@ module Mittsu::MeshAnalysis
       # This could be much more efficient by walking round the wings
       @edges.each do |e|
         next if e.nil? || e.index == e0.index
-        e.reattach_edge!(from: e0.finish_left, to: e0.start_left)
-        e.reattach_edge!(from: e0.finish_right, to: e0.start_right)
-        reattached = e.reattach_vertex(from: e0.finish, to: e0.start)
-        @edges[reattached.index] = reattached if reattached
+        @edges[e.index] =
+          e.reattach_edge(from: e0.finish_left, to: e0.start_left)
+            .reattach_edge(from: e0.finish_right, to: e0.start_right)
+            .reattach_vertex(from: e0.finish, to: e0.start)
       end
 
       # Apply edge changes

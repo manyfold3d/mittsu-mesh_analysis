@@ -31,27 +31,27 @@ module Mittsu::MeshAnalysis
     end
 
     def reattach_vertex(from:, to:)
-      out = nil
+      out = clone
       if @start == from
-        out = clone
         out.start = to
       elsif @finish == from
-        out = clone
         out.finish = to
       end
-      (out.nil? || out.degenerate?) ? nil : out
+      out
     end
 
-    def reattach_edge!(from:, to:)
-      if @start_left == from
-        @start_left = to
-      elsif @finish_left == from
-        @finish_left = to
-      elsif @start_right == from
-        @start_right = to
-      elsif @finish_right == from
-        @finish_right = to
+    def reattach_edge(from:, to:)
+      out = clone
+      if out.start_left == from
+        out.start_left = to
+      elsif out.finish_left == from
+        out.finish_left = to
+      elsif out.start_right == from
+        out.start_right = to
+      elsif out.finish_right == from
+        out.finish_right = to
       end
+      out
     end
 
     def coincident_at(edge)
