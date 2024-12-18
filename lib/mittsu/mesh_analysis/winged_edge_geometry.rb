@@ -138,6 +138,13 @@ module Mittsu::MeshAnalysis
         displacement: Mittsu::Vector3.new.sub_vectors(@vertices[e0.finish], @vertices[e0.start]).divide_scalar(2)
       )
 
+      # Create changeset to store edges that will be changed
+      changeset = {
+        e0.index => nil,
+        e0.finish_left => nil,
+        e0.start_right => nil
+      }
+
       # Collapse left face
       start_left = @edges[e0.start_left]
       finish_left = @edges[e0.finish_left]
@@ -156,24 +163,22 @@ module Mittsu::MeshAnalysis
         @edges[finish_right.index] = finish_right
       end
 
-      # Remove one vertex, and three edges
-      @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
-      @edges[e0.finish_left] = nil
-      @edges[e0.start_right] = nil
-      @edges[e0.index] = nil
-
       # Reattach edges to remove old indexes
       # This could be much more efficient by walking round the wings
       @edges.each do |e|
         next if e.nil?
         e.reattach_edge!(from: finish_left.index, to: start_left.index) if finish_left && start_left
         e.reattach_edge!(from: start_right.index, to: finish_right.index) if finish_right && start_right
-        r = e.reattach_vertex(from: e0.finish, to: e0.start)
-        @edges[e.index] = r if r
+        reattached = e.reattach_vertex(from: e0.finish, to: e0.start)
+        @edges[reattached.index] = reattached if reattached
       end
 
+      # Apply edge changes
+      changeset.each_pair { |i, e| @edges[i] = e }
       # Move vertex
       @vertices[e0.start] = Mittsu::Vector3.new.add_vectors(@vertices[e0.start], split.displacement)
+      # Remove old vertex
+      @vertices[e0.finish] = Mittsu::Vector3.new(0, 0, 0) # This can become nil later when we compact and reindex things
       # Prepare for rendering
       flatten! if flatten
       # Return split parameters required to invert operation
