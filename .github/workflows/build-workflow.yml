@@ -30,7 +30,12 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - run: bundle exec rake spec
+      - name: Run tests
+        uses: paambaati/codeclimate-action@v9.0.0
+        with:
+          coverageCommand: bundle exec rake spec
+        env:
+          CC_TEST_REPORTER_ID: 4eb569068a47d6a95d13291e941c4fffae97f28d87a229ef185781f016a6d227
 
   macos:
     name: macOS
