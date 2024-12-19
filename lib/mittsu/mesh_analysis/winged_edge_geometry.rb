@@ -49,13 +49,24 @@ module Mittsu::MeshAnalysis
     end
 
     def collapse_cost(index)
-      edge_length(index) || 100
+      length = edge_length(index) || 100
+      curvature = edge_curvature(index) || 100
+      length * curvature
     end
 
     def edge_length(index)
       e0 = edge(index)
       return nil if e0.nil?
       @vertices[e0.start].distance_to(@vertices[e0.finish])
+    end
+
+    def edge_curvature(index)
+      e0 = edge(index)
+      unless e0.nil?
+        vl = @faces[e0.left]&.normal
+        vr = @faces[e0.right]&.normal
+        (1 - vl.normalize.dot(vr.normalize)) / 2 if vl && vr
+      end
     end
 
     def flatten!
